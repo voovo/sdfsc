@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:width="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: common_header"></head>
+<style>
+	#enterPart {
+		display: inline-block;
+		width: 49%;
+	}
+
+	#leavePart {
+		display: inline-block;
+		width: 49%;
+	}
+
+	.mainPart {
+		padding: 0;
+		margin: 0;
+		display: inline-block;
+	}
+</style>
+<body>
+<div class="container-fluid">
+	<div class="row">
+		<!--side-bar-->
+		<!--<div class="col-sm-3 col-md-2 sidebar" th:include="common/sidebar :: sidebar">-->
+		<!--</div>-->
+		<!--//side-bar-->
+		<div class="col-sm-6  col-md-12 col-md-offset-0  mainPart">
+			<h3><a href="/">点击返回首页</a></h3>
+			<div id="enterPart" class="col-md-6 col-sm-3">
+				<div>
+					<div style="margin: 3px">
+						<button id="enter-timeChartBtn" class="btn btn-primary">济南机场落地航班时间分布图
+						</button>
+						<button id="enter-directionChartBtn" class="btn btn-primary">济南机场落地航班方向分布图
+						</button>
+					</div>
+					<div th:include="common/buttons :: buttons('enter-')"></div>
+				</div>
+				<div id="enter-leaveTable" class="services active">
+					<h3>入场航班(当前数量：<span id="enterPortSize" th:text="${enterPorts.size()}"></span>个）</h3>
+					<!--service-page-->
+					<div class="servcs-page  text-center">
+						<div class="table-chugang">
+							<div id="enter-timeChart" style="width: 90%;height:500px;"></div>
+							<div id="enter-directionChartDiv">
+								<!--<form style="width: 300px; margin-left: 20%" class="bs-example bs-example-form" role="form">-->
+								<!--<div class="input-group">-->
+								<!--<span class="input-group-addon">开始时间</span>-->
+								<!--<input type="time" id="enter-startTime" class="form-control">-->
+								<!--<span class="input-group-addon">结束时间</span>-->
+								<!--<input type="time" id="enter-endTime" class="form-control">-->
+								<!--<span class="input-group-addon">>>></span>-->
+								<!--<input type="button" value="确定" class="form-control btn-success">-->
+								<!--</div>-->
+								<!--</form>-->
+								<div id="enter-directionChart" style="width: 90%;height:500px;"></div>
+							</div>
+							<table id="enter-myLeaveTable" class="table table-striped tablesorter tablesorter-blue">
+								<thead>
+								<tr>
+									<th>航班号</th>
+									<th>机型</th>
+									<th>起飞机场</th>
+									<th>目的地机场</th>
+									<!--<th>起飞时间</th>-->
+									<th>实际起飞</th>
+									<!--<th>推算飞行时间</th>-->
+									<th id="enter-predictionTime">预计落地</th>
+									<th>实际落地</th>
+									<th>剩余时间</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="port : ${enterPorts}"
+										th:class="${port.isTokenOff()}? 'warning enter-tr' : 'success enter-tr'"
+										th:name="${port.minutes}">
+									<td th:text="${port.ARCID}"></td>
+									<td th:text="${port.WKTRC}"></td>
+									<td th:text="${port.ADEP}"></td>
+									<td th:text="${port.ADES}"></td>
+									<td th:text="${port.getStartTime()} ? ${#dates.format(port.getStartTime(), 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td class="enter-portMin" th:text="${port.minutes}"></td>
+								</tr>
+								</tbody>
+							</table>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+			<div id="leavePart" class="col-md-6 col-sm-3">
+				<div>
+					<div style="margin: 3px">
+						<button id="leave-timeChartBtn" class="btn btn-primary">济南机场起飞航班时间分布图
+						</button>
+						<button id="leave-directionChartBtn" class="btn btn-primary">济南机场起飞航班方向分布图
+						</button>
+					</div>
+
+					<div th:include="common/buttons :: buttons('leave-')"></div>
+
+				</div>
+				<div id="leave-leaveTable" class="services active">
+					<h3>出港航班(当前数量：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>					<!--service-page-->
+					<div class="servcs-page  text-center">
+						<div class="table-chugang">
+							<div id="leave-timeChart" style="width: 90%;height:500px;"></div>
+							<div id="leave-directionChartDiv">
+								<!--<form style="width: 300px; margin-left: 20%" class="bs-example bs-example-form" role="form">-->
+								<!--<div class="input-group">-->
+								<!--<span class="input-group-addon">开始时间</span>-->
+								<!--<input type="time" id="leave-startTime" class="form-control">-->
+								<!--<span class="input-group-addon">结束时间</span>-->
+								<!--<input type="time" id="leave-endTime" class="form-control">-->
+								<!--<span class="input-group-addon">>>></span>-->
+								<!--<input type="button" value="确定" class="form-control btn-success">-->
+								<!--</div>-->
+								<!--</form>-->
+								<div id="leave-directionChart" style="width: 90%;height:500px;"></div>
+							</div>
+							<table id="leave-myLeaveTable" class="table table-striped tablesorter tablesorter-blue">
+								<thead>
+								<tr>
+									<th>航班号</th>
+									<th>机型</th>
+									<th>起飞机场</th>
+									<th>目的地机场</th>
+									<!--<th>起飞时间</th>-->
+									<th>实际起飞</th>
+									<!--<th>推算飞行时间</th>-->
+									<th id="leave-predictionTime">预计落地</th>
+									<th>实际落地</th>
+									<th>剩余时间</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="port : ${leavePorts}"
+										th:class="${port.isTokenOff()}? 'warning leave-tr' : 'success leave-tr'"
+										th:name="${port.minutes}">
+									<td th:text="${port.ARCID}"></td>
+									<td th:text="${port.WKTRC}"></td>
+									<td th:text="${port.ADEP}"></td>
+									<td th:text="${port.ADES}"></td>
+									<td th:text="${port.getStartTime()} ? ${#dates.format(port.getStartTime(), 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+									<td class="leave-portMin" th:text="${port.minutes}"></td>
+								</tr>
+								</tbody>
+							</table>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer">
+
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script>
+		$(function () {
+			$("#enter-myLeaveTable").tablesorter();
+			$("#enter-predictionTime").click();
+			$("#leave-myLeaveTable").tablesorter();
+			$("#leave-predictionTime").click();
+		});
+	</script>
+	<script >
+		function getSize(port, minute){
+			var size = 0;
+			for(var i=0; i<port.length; i++){
+				if(port[i].minutes <= minute){
+					size++;
+				}
+			}
+			return size;
+		}
+	</script>
+	<script th:inline="javascript">
+		var nowDate = /*[[${JNowTime}]]*/;
+		var enter_timeSelect = 240;
+		var enter_leaveNumbers = [];
+		var enter_leaveCounts = [];
+		var enter_ports = /*[[${enterPorts}]]*/;
+		var enter_timeStep = 1;
+		nowDate = new Date(nowDate);
+		nowDate.setHours(nowDate.getHours() - 1);
+
+		function enter_initTime() {
+			enter_leaveNumbers = [];
+			enter_leaveCounts = [];
+			var len = parseInt(enter_timeSelect / enter_timeStep) + 1;
+			for (var i = 0; i < enter_ports.length; i++) {
+				var n = parseInt(enter_ports[i].minutes / enter_timeStep);
+				if (enter_leaveCounts[n] == undefined) {
+					enter_leaveCounts[n] = 0;
+				}
+				enter_leaveCounts[n]++;
+				if (enter_leaveNumbers[n] == undefined) {
+					enter_leaveNumbers[n] = "";
+				}
+				enter_leaveNumbers[n] += "<br>" + enter_ports[i].ARCID;
+			}
+			for (var i = 0; i < len; i++) {
+				if (enter_leaveCounts[i] == undefined) {
+					enter_leaveCounts[i] = 0;
+				}
+				if (enter_leaveNumbers[i] == undefined) {
+					enter_leaveNumbers[i] = "";
+				}
+			}
+			enter_leaveCounts.length = len;
+			enter_leaveNumbers.length = len;
+			console.info(enter_leaveCounts.length);
+			enter_setTimeChart(enter_leaveCounts, enter_leaveNumbers, 'enter-timeChart');
+		}
+		function enter_setTimeChart(leaveCounts, leaveNumbers, ChartId) {
+			var leaveXData = [];
+			for (var i = 0; i < leaveCounts.length; i++) {
+				var h = nowDate.getHours();
+				var m = nowDate.getMinutes();
+				m += i * enter_timeStep;
+				if (m > 60) {
+					h += parseInt(m / 60);
+					m = m % 60;
+				}
+				if (m < 10) {
+					m = "0" + m;
+				}
+				leaveXData[i] = h % 24 + ":" + m;
+			}
+			leaveXData[parseInt(60 / enter_timeStep)] = {
+				value : "现在",
+				textStyle : {
+					color : 'red'
+				}
+			};
+			// 基于准备好的dom，初始化echarts实例
+			var timeChart = echarts.init(document.getElementById(ChartId));
+			option = {
+				tooltip: {
+					trigger: 'axis'
+				},
+				legend: {
+					data: ['预计航班']
+				},
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					containLabel: true
+				},
+				toolbox: {
+					feature: {
+						saveAsImage: {}
+					}
+				},
+				xAxis: [
+					{
+						type: 'category',
+						boundaryGap: false,
+						data: leaveXData,
+						max: 181,
+						axisLabel: {
+							show: true,
+							rotate: 30,
+							clickable: true
+						}
+					}
+				],
+				yAxis: [
+					{
+						type: 'value',
+						splitNumber: 2,
+						axisLabel: {
+							show: true,
+							interval: 0,
+							rotate: 30,
+							clickable: true
+						}
+					}
+				],
+				series: [
+					{
+						name: '预计航班',
+						type: 'bar',
+						stack: '总量',
+						data: leaveCounts
+					}
+				],
+				formatter: function (params, ticket, callback) {
+					if (params[0].name) {
+						if (params[0].data != 0) {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						}
+						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+
+					}
+					else {
+						return "预计落地航班";
+					}
+				}
+			};
+			timeChart.setOption(option);
+		}
+	</script>
+
+	<script>
+		var enter_extraTime = 0;
+		var enter_E_count = 0;
+		var enter_E_context = "";
+		var enter_N_count = 0;
+		var enter_N_context = "";
+		var enter_S_count = 0;
+		var enter_S_context = "";
+		var enter_W_count = 0;
+		var enter_W_context = "";
+		function enter_initDirection() {
+			enter_E_count = 0;
+			enter_E_context = "";
+			enter_N_count = 0;
+			enter_N_context = "";
+			enter_S_count = 0;
+			enter_S_context = "";
+			enter_W_count = 0;
+			enter_W_context = "";
+			for (var i = 0; i < enter_ports.length; i++) {
+				if (enter_ports[i].minutes <= enter_timeSelect + enter_extraTime) {
+
+					if (enter_ports[i].direction == "E") {
+						enter_E_count += 1;
+						enter_E_context += enter_ports[i].ARCID + ",";
+						if (enter_E_count % 5 == 4) {
+							enter_E_context += "<br>"
+						}
+					}
+					else if (enter_ports[i].direction == "N") {
+						enter_N_count += 1;
+						enter_N_context += enter_ports[i].ARCID + ",";
+						if (enter_N_count % 5 == 4) {
+							enter_N_context += "<br>"
+						}
+					}
+					else if (enter_ports[i].direction == "S") {
+						enter_S_count += 1;
+						enter_S_context += enter_ports[i].ARCID + ",";
+						if (enter_S_count % 5 == 4) {
+							enter_S_context += "<br>"
+						}
+					}
+					else if (enter_ports[i].direction == "W") {
+						enter_W_count += 1;
+						enter_W_context += enter_ports[i].ARCID + ",";
+						if (enter_W_count % 5 == 4) {
+							enter_W_context += "<br>"
+						}
+					}
+				}
+			}
+		}
+		function enter_setDirectionChart() {
+			enter_initDirection();
+			// 基于准备好的dom，初始化echarts实例
+			var directionChart = echarts.init(document.getElementById('enter-directionChart'));
+			option = {
+				title: {
+					text: '方向分步图',
+					subtext: '纯属虚构',
+					x: 'center'
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: function (params, ticket, callback) {
+						var reslut = "";
+						reslut = params.seriesName + "--" + params.name;
+						reslut += " : " + params.data.value;
+						reslut += "<br>" + params.data.context;
+						return reslut;
+					}
+				},
+				legend: {
+					x: 'center',
+					y: 'bottom',
+					data: ['东', '南', '西', '北']
+				},
+				toolbox: {
+					show: true,
+					feature: {
+						mark: {show: true},
+						dataView: {show: true, readOnly: false},
+						magicType: {
+							show: true,
+							type: ['pie', 'funnel']
+						},
+						restore: {show: true},
+						saveAsImage: {show: true}
+					}
+				},
+				calculable: true,
+				series: [
+					{
+						name: '方向分步图',
+						type: 'pie',
+						radius: [30, 150],
+						center: ['50%', 250],
+						roseType: 'area',
+						startAngle: 45,
+						data: [
+							{value: enter_W_count, name: '东', context: enter_W_context},
+							{value: enter_S_count, name: '南', context: enter_S_context},
+							{value: enter_E_count, name: '西', context: enter_E_context},
+							{value: enter_N_count, name: '北', context: enter_N_context}
+						]
+					}
+				]
+			};
+			directionChart.setOption(option);
+		}
+		enter_setDirectionChart();
+	</script>
+	<script>
+		function enter_tableChange() {
+			var ths = $('tr.enter-tr');
+			for (var i = 0; i < ths.length; i++) {
+				var _th = $(ths.get(i));
+				if (_th.attr('name') > enter_timeSelect - 60) {
+					_th.hide();
+				} else {
+					_th.show();
+				}
+			}
+		}
+		function enter_timeChange() {
+			enter_initTime();
+			enter_setDirectionChart();
+			$('#enterPortSize').text(getSize(enter_ports,enter_timeSelect-60));
+
+		}
+		$('#enter-1hours').change(function () {
+			enter_timeSelect = 120;
+			enter_timeChange();
+			enter_tableChange();
+		});
+		$('#enter-2hours').change(function () {
+			enter_timeSelect = 180;
+			enter_timeChange();
+			enter_tableChange();
+		});
+		$('#enter-3hours').change(function () {
+			enter_timeSelect = 240;
+			enter_timeChange();
+			enter_tableChange();
+		});
+		$('#enter-3hours').change();
+		$('#enter-1min').change(function () {
+			enter_timeStep = 1;
+			enter_timeChange();
+		});
+		$('#enter-5min').change(function () {
+			enter_timeStep = 5;
+			enter_timeChange();
+		});
+		$('#enter-5min').change();
+	</script>
+
+	<script>
+		function enter_refresh() {
+			switch (enter_timeSelect) {
+				case 120 :
+					$('#enter-1hours').change();
+					break;
+				case 180 :
+					$('#enter-2hours').change();
+					break;
+				case 240 :
+					$('#enter-3hours').change();
+					break;
+				default:
+					$('#enter-3hours').change();
+					break;
+			}
+		}
+	</script>
+	<script>
+		var enter_timeCartBtn = $('#enter-timeChartBtn');
+		var enter_directionChartBtn = $('#enter-directionChartBtn');
+		var enter_timeChart = $('#enter-timeChart');
+		var enter_directionChartDiv = $('#enter-directionChartDiv');
+		enter_timeCartBtn.click(function () {
+			enter_timeChart.fadeIn(500);
+			enter_directionChartDiv.hide();
+			enter_refresh();
+		});
+		enter_directionChartBtn.click(function () {
+			enter_directionChartDiv.fadeIn(500);
+			enter_timeChart.hide();
+			enter_refresh();
+		});
+		enter_timeCartBtn.click();
+	</script>
+	<script>
+		var enter_portMin = $('.enter-portMin');
+		$('#enter-paodao01').change(function () {
+			for (var i = 0; i < enter_ports.length; i++) {
+				enter_ports[i].minutes += 3;
+			}
+
+			for (var i = 0; i < enter_portMin.length; i++) {
+				enter_portMin.get(i).innerHTML = (parseInt(enter_portMin.get(i).innerHTML) + 3);
+			}
+			enter_extraTime = 3;
+			enter_refresh();
+		});
+		$('#enter-paodao19').change(function () {
+			for (var i = 0; i < enter_ports.length; i++) {
+				enter_ports[i].minutes -= 3;
+			}
+			for (var i = 0; i < enter_portMin.length; i++) {
+				enter_portMin.get(i).innerHTML = (parseInt(enter_portMin.get(i).innerHTML) - 3);
+			}
+			enter_refresh();
+			enter_extraTime = 0;
+
+		});
+		$('#enter-paodao01').click();
+	</script>
+
+
+	<!--65465465456465465165749817-->
+	<script th:inline="javascript">
+		var leave_timeSelect = 240;
+		var leave_leaveNumbers = [];
+		var leave_leaveCounts = [];
+		var leave_ports = /*[[${leavePorts}]]*/;
+		var leave_timeStep = 1;
+		function leave_initTime() {
+			leave_leaveNumbers = [];
+			leave_leaveCounts = [];
+			var len = parseInt(leave_timeSelect / leave_timeStep) + 1;
+			for (var i = 0; i < leave_ports.length; i++) {
+				var n = parseInt(leave_ports[i].minutes / leave_timeStep);
+				if (leave_leaveCounts[n] == undefined) {
+					leave_leaveCounts[n] = 0;
+				}
+				leave_leaveCounts[n]++;
+				if (leave_leaveNumbers[n] == undefined) {
+					leave_leaveNumbers[n] = "";
+				}
+				leave_leaveNumbers[n] += "<br>" + leave_ports[i].ARCID;
+			}
+			for (var i = 0; i < len; i++) {
+				if (leave_leaveCounts[i] == undefined) {
+					leave_leaveCounts[i] = 0;
+				}
+				if (leave_leaveNumbers[i] == undefined) {
+					leave_leaveNumbers[i] = "";
+				}
+			}
+			leave_leaveCounts.length = len;
+			leave_leaveNumbers.length = len;
+			console.info(leave_leaveCounts.length);
+			leave_setTimeChart(leave_leaveCounts, leave_leaveNumbers, 'leave-timeChart');
+		}
+		function leave_setTimeChart(leaveCounts, leaveNumbers, ChartId) {
+			var leaveXData = [];
+			for (var i = 0; i < leaveCounts.length; i++) {
+				var h = nowDate.getHours();
+				var m = nowDate.getMinutes();
+				m += i * leave_timeStep;
+				if (m > 60) {
+					h += parseInt(m / 60);
+					m = m % 60;
+				}
+				if (m < 10) {
+					m = "0" + m;
+				}
+				leaveXData[i] = h % 24 + ":" + m;
+			}
+			leaveXData[parseInt(60 / leave_timeStep)] = {
+				value : "现在",
+				textStyle : {
+					color : 'red'
+				}
+			};
+			// 基于准备好的dom，初始化echarts实例
+			var timeChart = echarts.init(document.getElementById(ChartId));
+			option = {
+				tooltip: {
+					trigger: 'axis'
+				},
+				legend: {
+					data: ['预计航班']
+				},
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					containLabel: true
+				},
+				toolbox: {
+					feature: {
+						saveAsImage: {}
+					}
+				},
+				xAxis: [
+					{
+						type: 'category',
+						boundaryGap: false,
+						data: leaveXData,
+						max: 181,
+						axisLabel: {
+							show: true,
+							rotate: 30,
+							clickable: true
+						}
+					}
+				],
+				yAxis: [
+					{
+						type: 'value',
+						splitNumber: 2,
+						axisLabel: {
+							show: true,
+							interval: 0,
+							rotate: 30,
+							clickable: true
+						}
+					}
+				],
+				series: [
+					{
+						name: '预计航班',
+						type: 'bar',
+						stack: '总量',
+						data: leaveCounts
+					}
+				],
+				formatter: function (params, ticket, callback) {
+					if (params[0].name) {
+						if (params[0].data != 0) {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						}
+						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+
+					}
+					else {
+						return "预计落地航班";
+					}
+				}
+			};
+			timeChart.setOption(option);
+		}
+	</script>
+
+	<script>
+		var leave_extraTime = 0;
+		var leave_E_count = 0;
+		var leave_E_context = "";
+		var leave_N_count = 0;
+		var leave_N_context = "";
+		var leave_S_count = 0;
+		var leave_S_context = "";
+		var leave_W_count = 0;
+		var leave_W_context = "";
+		function leave_initDirection() {
+			leave_E_count = 0;
+			leave_E_context = "";
+			leave_N_count = 0;
+			leave_N_context = "";
+			leave_S_count = 0;
+			leave_S_context = "";
+			leave_W_count = 0;
+			leave_W_context = "";
+			for (var i = 0; i < leave_ports.length; i++) {
+				console.info(leave_ports[i].direction);
+				if (leave_ports[i].minutes <= leave_timeSelect + leave_extraTime) {
+
+					if (leave_ports[i].direction == "E") {
+						leave_E_count += 1;
+						leave_E_context += leave_ports[i].ARCID + ",";
+						if (leave_E_count % 5 == 4) {
+							leave_E_context += "<br>"
+						}
+					}
+					else if (leave_ports[i].direction == "N") {
+						leave_N_count += 1;
+						leave_N_context += leave_ports[i].ARCID + ",";
+						if (leave_N_count % 5 == 4) {
+							leave_N_context += "<br>"
+						}
+					}
+					else if (leave_ports[i].direction == "S") {
+						leave_S_count += 1;
+						leave_S_context += leave_ports[i].ARCID + ",";
+						if (leave_S_count % 5 == 4) {
+							leave_S_context += "<br>"
+						}
+					}
+					else if (leave_ports[i].direction == "W") {
+						leave_W_count += 1;
+						leave_W_context += leave_ports[i].ARCID + ",";
+						if (leave_W_count % 5 == 4) {
+							leave_W_context += "<br>"
+						}
+					}
+				}
+			}
+		}
+		function leave_setDirectionChart() {
+			leave_initDirection();
+			// 基于准备好的dom，初始化echarts实例
+			var directionChart = echarts.init(document.getElementById('leave-directionChart'));
+			option = {
+				title: {
+					text: '方向分步图',
+					subtext: '纯属虚构',
+					x: 'center'
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: function (params, ticket, callback) {
+						var reslut = "";
+						reslut = params.seriesName + "--" + params.name;
+						reslut += " : " + params.data.value;
+						reslut += "<br>" + params.data.context;
+						return reslut;
+					}
+				},
+				legend: {
+					x: 'center',
+					y: 'bottom',
+					data: ['东', '南', '西', '北']
+				},
+				toolbox: {
+					show: true,
+					feature: {
+						mark: {show: true},
+						dataView: {show: true, readOnly: false},
+						magicType: {
+							show: true,
+							type: ['pie', 'funnel']
+						},
+						restore: {show: true},
+						saveAsImage: {show: true}
+					}
+				},
+				calculable: true,
+				series: [
+					{
+						name: '方向分步图',
+						type: 'pie',
+						radius: [30, 150],
+						center: ['50%', 250],
+						roseType: 'area',
+						startAngle: 45,
+						data: [
+							{value: leave_W_count, name: '东', context: leave_W_context},
+							{value: leave_S_count, name: '南', context: leave_S_context},
+							{value: leave_E_count, name: '西', context: leave_E_context},
+							{value: leave_N_count, name: '北', context: leave_N_context}
+						]
+					}
+				]
+			};
+			directionChart.setOption(option);
+		}
+		leave_setDirectionChart();
+	</script>
+	<script>
+		function leave_tableChange() {
+			var ths = $('tr.leave-tr');
+			for (var i = 0; i < ths.length; i++) {
+				var _th = $(ths.get(i));
+				if (_th.attr('name') > leave_timeSelect - 60) {
+					_th.hide();
+				} else {
+					_th.show();
+				}
+			}
+		}
+		function leave_timeChange() {
+			leave_initTime();
+			leave_setDirectionChart();
+			$('#leavePortsSize').text(getSize(leave_ports,leave_timeSelect-60));
+
+		}
+		$('#leave-1hours').change(function () {
+			leave_timeSelect = 120;
+			leave_timeChange();
+			leave_tableChange();
+		});
+		$('#leave-2hours').change(function () {
+			leave_timeSelect = 180;
+			leave_timeChange();
+			leave_tableChange();
+		});
+		$('#leave-3hours').change(function () {
+			leave_timeSelect = 240;
+			leave_timeChange();
+			leave_tableChange();
+		});
+		$('#leave-3hours').change();
+		$('#leave-1min').change(function () {
+			leave_timeStep = 1;
+			leave_timeChange();
+		});
+		$('#leave-5min').change(function () {
+			leave_timeStep = 5;
+			leave_timeChange();
+		});
+		$('#leave-5min').change();
+	</script>
+
+	<script>
+		function leave_refresh() {
+			switch (leave_timeSelect) {
+				case 120 :
+					$('#leave-1hours').change();
+					break;
+				case 180 :
+					$('#leave-2hours').change();
+					break;
+				case 240 :
+					$('#leave-3hours').change();
+					break;
+				default:
+					$('#leave-3hours').change();
+					break;
+			}
+		}
+	</script>
+	<script>
+		var leave_timeCartBtn = $('#leave-timeChartBtn');
+		var leave_directionChartBtn = $('#leave-directionChartBtn');
+		var leave_timeChart = $('#leave-timeChart');
+		var leave_directionChartDiv = $('#leave-directionChartDiv');
+		leave_timeCartBtn.click(function () {
+			leave_timeChart.fadeIn(500);
+			leave_directionChartDiv.hide();
+			leave_refresh();
+		});
+		leave_directionChartBtn.click(function () {
+			leave_directionChartDiv.fadeIn(500);
+			leave_timeChart.hide();
+			leave_refresh();
+		});
+		leave_timeCartBtn.click();
+	</script>
+	<script>
+		var leave_portMin = $('.leave-portMin');
+		$('#leave-paodao01').change(function () {
+			for (var i = 0; i < leave_ports.length; i++) {
+				leave_ports[i].minutes += 3;
+			}
+
+			for (var i = 0; i < leave_portMin.length; i++) {
+				leave_portMin.get(i).innerHTML = (parseInt(leave_portMin.get(i).innerHTML) + 3);
+			}
+			leave_extraTime = 3;
+			leave_refresh();
+		});
+		$('#leave-paodao19').change(function () {
+			for (var i = 0; i < leave_ports.length; i++) {
+				leave_ports[i].minutes -= 3;
+			}
+			for (var i = 0; i < leave_portMin.length; i++) {
+				leave_portMin.get(i).innerHTML = (parseInt(leave_portMin.get(i).innerHTML) - 3);
+			}
+			leave_refresh();
+		});
+		leave_extraTime = 0;
+
+		$('#leave-paodao01').click();
+	</script>
+</body>
+</html>

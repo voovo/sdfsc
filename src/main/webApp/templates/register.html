@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common/header :: common_header"></head>
+
+<body>
+<div class="container-fluid">
+	<div class="row">
+		<!--side-bar-->
+		<div class="col-sm-3 col-md-2 sidebar" th:include="common/sidebar :: sidebar">
+		</div>
+		<!--//side-bar-->
+		<div class="col-sm-9  col-md-10 col-md-offset-2 main about-main">
+			<div class="services form" style="display: block">
+				<form action="/register/" id="register-form" class="contact-form" method="POST">
+					<div class="form-group">
+						<label for="username">用户名</label>
+						<input type="text" id="username" name="username" placeholder="输入用户名">
+					</div>
+					<div class="form-group">
+						<label for="email">邮箱</label>
+						<input type="email" id="email" name="email" placeholder="邮箱">
+					</div>
+					<div class="form-group">
+						<label for="password">密码</label>
+						<input type="password" id="password" name="password" placeholder="输入密码">
+					</div>
+					<div class="form-group">
+						<label for="password2">再次输入密码</label>
+						<input type="password" id="password2" name="password2" placeholder="再次输入密码">
+					</div>
+					<div class="form-group">
+						<label for="role">用户类型</label>
+						<input style="display: none" type="text" id="role" name="role" placeholder="用户类型" value="">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default" id="roleCheckDisplay"></button>
+							<button type="button" class="btn btn-default dropdown-toggle"
+											data-toggle="dropdown">
+								<span class="caret"></span>
+								<span class="sr-only"></span>
+							</button>
+							<ul class="dropdown-menu" role="menu" id="roleCheck">
+								<li th:each="ro : ${roles}"><a href="javascript:;" th:value="${ro.role}" th:text="${ro.name}"></a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="form-group">
+						<input type="submit" class="button" value="注册">
+					</div>
+					<div class="form-group">
+						<h2 id="message" th:if="${param.message}" th:text="${param.message[0]}"></h2>
+					</div>
+				</form>
+
+			</div>
+		</div>
+		<div class="footer">
+
+		</div>
+	</div>
+</div>
+<div class="clearfix"></div>
+<script>
+	$(document).ready(function () {
+		$('#register-form')
+				.bootstrapValidator({
+					message: '这个值无效',
+					//live: 'submitted',
+					feedbackIcons: {
+						valid: 'glyphicon glyphicon-ok',
+						invalid: 'glyphicon glyphicon-remove',
+						validating: 'glyphicon glyphicon-refresh'
+					},
+					fields: {
+						username: {
+							message: '无效的用户名',
+							validators: {
+								notEmpty: {
+									message: '用户名不能为空'
+								},
+								stringLength: {
+									min: 5,
+									max: 30,
+									message: '用户名长度大于5小于30'
+								},
+								regexp: {
+									regexp: /^[a-zA-Z0-9_\.]+$/,
+									message: '用户名只能为英文字符数组或者下划线'
+								}
+							}
+						},
+						email: {
+							validators: {
+								notEmpty: {
+									message: '邮箱不能为空'
+								},
+								emailAddress: {
+									message: '无效的邮箱格式'
+								}
+							}
+						},
+						password: {
+							validators: {
+								notEmpty: {
+									message: '密码不能为空'
+								},
+								stringLength: {
+									min: 5,
+									max: 30,
+									message: '密码长度大于5小于30'
+								}
+							}
+						},
+						password2: {
+							validators: {
+								notEmpty: {
+									message: '密码不能为空'
+								},
+								identical: {
+									field: 'password',
+									message: '两次密码应该一致'
+								},
+								stringLength: {
+									min: 5,
+									max: 30,
+									message: '密码长度大于5小于30'
+								}
+							}
+						}
+					}
+				})
+
+	});
+</script>
+<script>
+	var role = $("#role");
+	var roleCheckDisplay = $("#roleCheckDisplay");
+	$("#roleCheck a").click(function () {
+		role.attr("value", $(this).attr("value"));
+		roleCheckDisplay.text($(this).text());
+	});
+	$("#roleCheck a").get(0).click();
+</script>
+</body>
+</html>

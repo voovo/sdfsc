@@ -1,0 +1,276 @@
+<script th:inline="javascript">
+	var nowDate = /*[[${JNowTime}]]*/;
+	var leave_timeSelect = 180;
+	var leave_leaveNumbers = [];
+	var leave_leaveCounts = [];
+	var leave_ports = /*[[${enterPorts}]]*/;
+	var leave_timeStep = 1;
+	nowDate = new Date(nowDate);
+	function leave_initTime() {
+		leave_leaveNumbers = [];
+		leave_leaveCounts = [];
+		var len = parseInt(leave_timeSelect / leave_timeStep) + 1;
+		for (var i = 0; i < leave_ports.length; i++) {
+			var n = parseInt(leave_ports[i].minutes / leave_timeStep);
+			if (leave_leaveCounts[n] == undefined) {
+				leave_leaveCounts[n] = 0;
+			}
+			leave_leaveCounts[n]++;
+			if (leave_leaveNumbers[n] == undefined) {
+				leave_leaveNumbers[n] = "";
+			}
+			leave_leaveNumbers[n] += "<br>" + leave_ports[i].ARCID;
+		}
+		for (var i = 0; i < len; i++) {
+			if (leave_leaveCounts[i] == undefined) {
+				leave_leaveCounts[i] = 0;
+			}
+			if (leave_leaveNumbers[i] == undefined) {
+				leave_leaveNumbers[i] = "";
+			}
+		}
+		leave_leaveCounts.length = len;
+		leave_leaveNumbers.length = len;
+		console.info(leave_leaveCounts.length);
+		leave_setTimeChart(leave_leaveCounts, leave_leaveNumbers, 'leave-timeChart');
+	}
+	function leave_setTimeChart(leaveCounts, leaveNumbers, ChartId) {
+		var leaveXData = [];
+		for (var i = 0; i < leaveCounts.length; i++) {
+			var h = nowDate.getHours();
+			var m = nowDate.getMinutes();
+			m += i * leave_timeStep;
+			if (m > 60) {
+				h += parseInt(m / 60);
+				m = m % 60;
+			}
+			if (m < 10) {
+				m = "0" + m;
+			}
+			leaveXData[i] = h % 24 + ":" + m;
+		}
+		// 基于准备好的dom，初始化echarts实例
+		var timeChart = echarts.init(document.getElementById(ChartId));
+		option = {
+			tooltip: {
+				trigger: 'axis'
+			},
+			legend: {
+				data: ['预计航班']
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			xAxis: [
+				{
+					type: 'category',
+					boundaryGap: false,
+					data: leaveXData,
+					max: 181,
+					axisLabel: {
+						show: true,
+						rotate: 30,
+						clickable: true
+					}
+				}
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitNumber: 2,
+					axisLabel: {
+						show: true,
+						interval: 0,
+						rotate: 30,
+						clickable: true
+					}
+				}
+			],
+			series: [
+				{
+					name: '预计航班',
+					type: 'bar',
+					stack: '总量',
+					data: leaveCounts
+				}
+			],
+			formatter: function (params, ticket, callback) {
+				if (params[0].name) {
+					if (params[0].data != 0) {
+						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+					}
+					return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+
+				}
+				else {
+					return "预计落地航班";
+				}
+			}
+		};
+		timeChart.setOption(option);
+	}
+</script>
+
+<script>
+	function leave_setDirectionChart() {
+		// 基于准备好的dom，初始化echarts实例
+		var directionChart = echarts.init(document.getElementById('leave-directionChart'));
+		option = {
+			title: {
+				text: '方向分步图',
+				subtext: '纯属虚构',
+				x: 'center'
+			},
+			tooltip: {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+			legend: {
+				x: 'center',
+				y: 'bottom',
+				data: ['东', '南', '西', '北']
+			},
+			toolbox: {
+				show: true,
+				feature: {
+					mark: {show: true},
+					dataView: {show: true, readOnly: false},
+					magicType: {
+						show: true,
+						type: ['pie', 'funnel']
+					},
+					restore: {show: true},
+					saveAsImage: {show: true}
+				}
+			},
+			calculable: true,
+			series: [
+				{
+					name: '方向分步图',
+					type: 'pie',
+					radius: [30, 150],
+					center: ['50%', 250],
+					roseType: 'area',
+					startAngle: 45,
+					data: [
+						{value: 10, name: '东'},
+						{value: 5, name: '南'},
+						{value: 15, name: '西'},
+						{value: 25, name: '北'}
+					]
+				}
+			]
+		};
+		directionChart.setOption(option);
+	}
+	leave_setDirectionChart();
+</script>
+<script>
+	function leave_tableChange() {
+		var ths = $('tr');
+		for (var i = 0; i < ths.length; i++) {
+			var _th = $(ths.get(i));
+			if (_th.attr('name') > leave_timeSelect) {
+				_th.hide();
+			} else {
+				_th.show();
+			}
+		}
+	}
+	function leave_timeChange() {
+		leave_initTime();
+		leave_setDirectionChart();
+	}
+	$('#leave-1hours').change(function () {
+		leave_timeSelect = 60;
+		leave_timeChange();
+		leave_tableChange();
+	});
+	$('#leave-2hours').change(function () {
+		leave_timeSelect = 120;
+		leave_timeChange();
+		leave_tableChange();
+	});
+	$('#leave-3hours').change(function () {
+		leave_timeSelect = 180;
+		leave_timeChange();
+		leave_tableChange();
+	});
+	$('#leave-3hours').change();
+	$('#leave-1min').change(function () {
+		leave_timeStep = 1;
+		leave_timeChange();
+	});
+	$('#leave-5min').change(function () {
+		leave_timeStep = 5;
+		leave_timeChange();
+	});
+	$('#leave-5min').change();
+</script>
+
+<script>
+	function leave_refresh() {
+		switch (leave_timeSelect) {
+			case 60 :
+				$('#leave-1hours').change();
+				break;
+			case 120 :
+				$('#leave-2hours').change();
+				break;
+			case 180 :
+				$('#leave-3hours').change();
+				break;
+			default:
+				$('#leave-3hours').change();
+				break;
+		}
+	}
+</script>
+<script>
+	var leave_timeCartBtn = $('#leave-timeChartBtn');
+	var leave_directionChartBtn = $('#leave-directionChartBtn');
+	var leave_timeChart = $('#leave-timeChart');
+	var leave_directionChartDiv = $('#leave-directionChartDiv');
+	leave_timeCartBtn.click(function () {
+		leave_timeChart.fadeIn(500);
+		leave_directionChartDiv.hide();
+		leave_refresh();
+	});
+	leave_directionChartBtn.click(function () {
+		leave_directionChartDiv.fadeIn(500);
+		leave_timeChart.hide();
+		leave_refresh();
+	});
+	leave_timeCartBtn.click();
+</script>
+<script>
+	var leave_portMin = $('.portMin');
+	$('#leave-paodao01').change(function () {
+		for (var i = 0; i < leave_ports.length; i++) {
+			leave_ports[i].minutes += 3;
+		}
+
+		for (var i = 0; i < leave_portMin.length; i++) {
+			leave_portMin.get(i).innerHTML = (parseInt(leave_portMin.get(i).innerHTML) + 3);
+		}
+		leave_refresh();
+	});
+	$('#leave-paodao19').change(function () {
+		for (var i = 0; i < leave_ports.length; i++) {
+			leave_ports[i].minutes -= 3;
+		}
+		for (var i = 0; i < leave_portMin.length; i++) {
+			leave_portMin.get(i).innerHTML = (parseInt(leave_portMin.get(i).innerHTML) - 3);
+		}
+		leave_refresh();
+	});
+	$('#leave-paodao01').click();
+</script>

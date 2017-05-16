@@ -1,0 +1,83 @@
+<div class="buttons-nav" th:fragment="buttons(idPre)">
+	<div class="btn-group dropdown" data-toggle="buttons">
+		<button type="button" class="btn dropdown-toggle btn-primary" id="dropdownMenu_paodao"
+						data-toggle="dropdown">
+			跑道选择
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu_paodao">
+			<li role="presentation">
+				<label class="btn btn-primary active">
+					<input type="radio" name="paodao" th:id="${idPre} + 'paodao01'" checked> 01号跑道
+				</label>
+			</li>
+			<li role="presentation">
+				<label class="btn btn-primary">
+					<input type="radio" name="paodao" th:id="${idPre} + 'paodao19'"> 19号跑道
+				</label>
+			</li>
+		</ul>
+	</div>
+	<div class="btn-group dropdown" data-toggle="buttons">
+		<button type="button" class="btn dropdown-toggle btn-primary" id="dropdownMenu_status"
+						data-toggle="dropdown">
+			开飞选择
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu_status">
+			<li role="presentation">
+				<label class="btn active btn-primary">
+					<input type="radio" name="status" th:id="${idPre} + 'statusOpen'" checked> 开飞
+				</label>
+			</li>
+			<li role="presentation">
+				<label class="btn btn-primary">
+					<input type="radio" name="status" th:id="${idPre} + 'statusClose'"> 不开飞
+				</label>
+			</li>
+		</ul>
+	</div>
+	<div class="btn-group dropdown" data-toggle="buttons">
+		<button type="button" class="btn dropdown-toggle btn-primary" id="dropdownMenu_time"
+						data-toggle="dropdown">
+			总时间
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu_time">
+			<li role="presentation">
+				<label class="btn btn-primary">
+					<input type="radio" name="time" th:id="${idPre} + '1hours'"> 1小时
+				</label>
+			</li>
+			<li role="presentation">
+				<label class="btn btn-primary">
+					<input type="radio" name="time" th:id="${idPre} + '2hours'"> 2小时
+				</label>
+			</li>
+			<li role="presentation">
+				<label class="btn btn-primary active">
+					<input type="radio" name="time" th:id="${idPre} + '3hours'" checked> 3小时
+				</label>
+			</li>
+		</ul>
+	</div>
+	<div class="btn-group dropdown" data-toggle="buttons">
+		<button type="button" class="btn dropdown-toggle btn-primary" id="dropdownMenu_plotPoints"
+						data-toggle="dropdown">
+			时间间隔
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu_plotPoints">
+			<li role="presentation">
+				<label class="btn btn-primary">
+					<input type="radio" name="plotPoints" th:id="${idPre} + '1min'"> 1分钟
+				</label>
+			</li>
+			<li role="presentation">
+				<label class="btn btn-primary  active">
+					<input type="radio" name="plotPoints" th:id="${idPre} + '5min'" checked> 5分钟
+				</label>
+			</li>
+		</ul>
+	</div>
+</div>

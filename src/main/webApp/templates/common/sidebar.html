@@ -1,0 +1,29 @@
+<div class="col-sm-3 col-md-2 sidebar" th:fragment="sidebar">
+	<div class="logo">
+		<!--<a href="index.html"><img src="images/logo.png" alt="logo"/></a>-->
+		<h3>山东空管流量预测系统</h3>
+		<h6 class="time" id="nowTime" th:text="${nowTime}"></h6>
+		<p class="time" th:if="${session.user}" th:text="${'你好，' + session.user.username}"></p>
+		<p class="time" th:if="${session.user}" th:text="${'身份：' + session.user.role.name}"></p>
+		<!--<p th:text="#{leavePorts.size()}"></p>-->
+	</div>
+	<div class="top-nav">
+		<span class="menu-icon"><img src="../static/images/menu-icon.png" alt=""/></span>
+		<div class="nav1">
+			<ul class="nav nav-sidebar">
+				<li><a class="hvr-rectangle-out" href="/jinjin/" th:if="${session.role} =='jinjin' or ${session.role} == 'admin'">进近流量预测</a></li>
+				<li><a class="hvr-rectangle-out" href="/area/" th:if="${session.role} =='quyu' or ${session.role} == 'admin'">区调流量预测</a></li>
+				<li><a class="hvr-rectangle-out" href="/experience/" th:if="${session.role} =='quyu' or ${session.role} == 'admin'">进近流量经验</a></li>
+				<li><a class="hvr-rectangle-out" href="/enterZSJN/" th:if="${session.role} =='jichang' or ${session.role} == 'admin'">济南机场落地航班</a></li>
+				<li><a class="hvr-rectangle-out" href="/leaveZSJN/" th:if="${session.role} =='jichang' or ${session.role} == 'admin'">济南机场起飞航班</a></li>
+				<li><a class="hvr-rectangle-out" href="/ZSJN/" th:if="${session.role} =='jichang' or ${session.role} == 'admin'">济南机场对比航班</a></li>
+				<!--<li><a class="hvr-rectangle-out" href="/login/" th:if="${session.user} == null">登陆</a></li>-->
+				<!--<li><a href="/register/">注册</a></li>-->
+				<li><a class="hvr-rectangle-out" href="/logout/" th:if="${session.user}">退出登录</a></li>
+			</ul>
+		</div>
+
+	</div>
+	<div class="clearfix"></div>
+	<p></p>
+</div>

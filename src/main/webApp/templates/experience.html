@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common/header :: common_header"></head>
+
+<body>
+<div class="container-fluid">
+	<div class="row">
+		<!--side-bar-->
+		<div class="col-sm-3 col-md-2 sidebar" th:include="common/sidebar :: sidebar">
+		</div>
+		<!--//side-bar-->
+		<div class="col-sm-9  col-md-10 col-md-offset-2 main about-main">
+			<div>
+
+			</div>
+			<div id="leaveTable" class="services active">
+				<h3 th:text="'经验表(当前数量：' + ${Ports.size()} + '个）'"></h3>
+				<!--service-page-->
+				<div class="servcs-page  text-center">
+					<div class="table-chugang">
+						<table id="myLeaveTable" class="table table-striped tablesorter tablesorter-blue">
+							<thead>
+							<tr>
+								<th>航班号</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
+								<!--<th>预起时间</th>-->
+								<th>起飞时间</th>
+								<th>落地时间</th>
+								<th>飞行时间</th>
+								<!--<th>使用跑道</th>-->
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="port : ${Ports}" th:name="${port.flyTime}">
+								<td th:text="${port.ARCID}"></td>
+								<td th:text="${port.ADEP}"></td>
+								<td th:text="${port.ADES}"></td>
+								<td th:text="${port.startTime} ? ${#dates.format(port.startTime, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.endTime} ? ${#dates.format(port.endTime, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.flyTime}"></td>
+								<!--<td th:text="${port.runway}"></td>-->
+							</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+
+		</div>
+	</div>
+</div>
+<div class="clearfix"></div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script>
+	$(function () {
+		$("#myLeaveTable").tablesorter();
+		$("#myEnterTable").tablesorter();
+	});
+</script>
+</body>
+</html>

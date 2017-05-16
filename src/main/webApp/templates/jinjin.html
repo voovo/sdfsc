@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="common/header::common_header"></head>
+
+<body>
+<div class="container-fluid">
+	<div class="row">
+		<!--side-bar-->
+		<div class="col-sm-3 col-md-2 sidebar" th:include="common/sidebar :: sidebar">
+		</div>
+		<!--//side-bar-->
+		<div class="col-sm-9  col-md-10 col-md-offset-2 main about-main">
+			<div>
+				<button id="leaveButton" class="btn btn-primary"> 出港表
+				</button>
+				<button id="enterButton" class="btn btn-primary">进港表
+				</button>
+				<button id="allButton" class="btn btn-primary">进港出港表
+				</button>
+				<div style="height: 10px"></div>
+				<div th:include="common/buttons :: buttons('')"></div>
+			</div>
+			<br>
+			<div id="leaveTable" class="services" style="display: none">
+				<h3>进港表(总数：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>
+				<!--service-page-->
+				<div class="servcs-page  text-center">
+					<div class="table-chugang">
+						<div id="leaveChart" style="width: 90%;height:500px;"></div>
+						<div id="leaveChartDirectionChart" style="width: 45%;height:250px;position:absolute;top:5px;right:10px;background-color: #0a0a0a"></div>
+						<div class="img" id="leaveImg" style="position: relative;width: 839px;height: 514px;margin: 0 15px 0 25px">
+							<img class="base" src="/static/img/base.png" alt="">
+							<div class="imgN">
+								<img class="green" src="/static/img/GN.png" alt="" style="position: absolute;top: 0; left: 44%;">
+								<img class="yellow" src="/static/img/YN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+								<img class="red" src="/static/img/RN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+							</div>
+							<div class="imgS">
+								<img class="green" src="/static/img/GS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;">
+								<img class="yellow" src="/static/img/YS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+								<img class="red" src="/static/img/RS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+							</div>
+							<div class="imgW">
+								<img class="green" src="/static/img/GW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;">
+								<img class="yellow" src="/static/img/YW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+								<img class="red" src="/static/img/RW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+							</div>
+							<div class="imgE">
+								<img class="green" src="/static/img/GE.png" alt="" style="position: absolute;top: 13%; left: 60%;">
+								<img class="yellow" src="/static/img/YE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+								<img class="red" src="/static/img/RE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+							</div>
+						</div>
+
+						<table id="myLeaveTable" class="table table-striped tablesorter tablesorter-blue">
+							<thead>
+							<tr>
+								<th>航班号</th>
+								<th>机型</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
+								<th>注册号</th>
+								<th>二次代码</th>
+								<th>状态</th>
+								<th>预起时间</th>
+								<th>实际起飞时间</th>
+								<th id="sortTime">剩余时间</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="port : ${leavePorts}" th:class="${port.minutes < 10}? 'danger ' : 'success'"
+									th:name="${port.minutes}">
+								<td th:text="${port.ARCID}"></td>
+								<td th:text="${port.WKTRC}"></td>
+								<td th:text="${port.ADEP}"></td>
+								<td th:text="${port.ADES}"></td>
+								<td th:text="${port.ARCREG}"></td>
+								<td th:text="${port.SsrCode}"></td>
+								<td th:text="${port.STATUS}"></td>
+								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td class="portMin" th:text="${port.minutes}"></td>
+							</tr>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+			<!--//service-page-->
+			<div id="enterTable" class="services active" style="display: none">
+				<h3>进港表(总数：<span id="enterPortsSize" th:text="${enterPorts.size()}"></span>个）</h3>
+				<!--service-page-->
+				<div class="servcs-page  text-center">
+					<div class="table-chugang">
+						<div id="enterChart" style="width: 90%;height:500px;"></div>
+						<div id="enterChartDirectionChart" style="width: 45%;height:250px;position:absolute;top:5px;right:10px;background-color: #0a0a0a"></div>
+						<div class="img" id="enterImg" style="position: relative;width: 839px;height: 514px;margin: 0 15px 0 25px">
+							<img class="base" src="/static/img/base.png" alt="">
+							<div class="imgN">
+								<img class="green" src="/static/img/GN.png" alt="" style="position: absolute;top: 0; left: 44%;">
+								<img class="yellow" src="/static/img/YN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+								<img class="red" src="/static/img/RN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+							</div>
+							<div class="imgS">
+								<img class="green" src="/static/img/GS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;">
+								<img class="yellow" src="/static/img/YS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+								<img class="red" src="/static/img/RS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+							</div>
+							<div class="imgW">
+								<img class="green" src="/static/img/GW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;">
+								<img class="yellow" src="/static/img/YW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+								<img class="red" src="/static/img/RW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+							</div>
+							<div class="imgE">
+								<img class="green" src="/static/img/GE.png" alt="" style="position: absolute;top: 13%; left: 60%;">
+								<img class="yellow" src="/static/img/YE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+								<img class="red" src="/static/img/RE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+							</div>
+						</div>
+
+						<table id="myAllTable" class="table table-striped tablesorter tablesorter-blue">
+							<thead>
+							<tr>
+								<th>航班号</th>
+								<th>机型</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
+								<th>注册号</th>
+								<th>二次代码</th>
+								<th>状态</th>
+								<th>预落时间</th>
+								<th id="sortTime2">剩余时间</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="port : ${enterPorts}"
+									th:class="${port.minutes < 10}? 'danger ' : 'success'"
+									th:name="${port.minutes}">
+								<td th:text="${port.ARCID}"></td>
+								<td th:text="${port.WKTRC}"></td>
+								<td th:text="${port.ADEP}"></td>
+								<td th:text="${port.ADES}"></td>
+								<td th:text="${port.ARCREG}"></td>
+								<td th:text="${port.SsrCode}"></td>
+								<td th:text="${port.STATUS}"></td>
+								<td th:text="${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')}"></td>
+								<td class="portMin" th:text="${port.minutes}"></td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div id="allTable" class="services active" style="display: none">
+				<h3 style="text-align: left;margin-top: 15px">进港出港表(总数：<span id="allPortsSize" th:text="${allPorts.size()}"></span>个）</h3>
+				<!--service-page-->
+				<div class="servcs-page  text-center">
+					<div class="table-chugang">
+						<div id="allChart" style="width: 90%;height:500px;"></div>
+						<div id="allChartDirectionChart" style="width: 45%;height:250px;position:absolute;top:5px;right:10px;"></div>
+						<div class="img" id="AllImg" style="position: relative;width: 839px;height: 514px;margin: 0 15px 0 25px">
+							<img class="base" src="/static/img/base.png" alt="">
+							<div class="imgN">
+								<img class="green" src="/static/img/GN.png" alt="" style="position: absolute;top: 0; left: 44%;">
+								<img class="yellow" src="/static/img/YN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+								<img class="red" src="/static/img/RN.png" alt="" style="position: absolute;top: 0; left: 44%;display: none">
+							</div>
+							<div class="imgS">
+								<img class="green" src="/static/img/GS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;">
+								<img class="yellow" src="/static/img/YS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+								<img class="red" src="/static/img/RS.png" alt="" style="position: absolute;bottom: 13%; left: 54.5%;display: none">
+							</div>
+							<div class="imgW">
+								<img class="green" src="/static/img/GW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;">
+								<img class="yellow" src="/static/img/YW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+								<img class="red" src="/static/img/RW.png" alt="" style="position: absolute;bottom: 48.5%; left: 21.5%;display: none">
+							</div>
+							<div class="imgE">
+								<img class="green" src="/static/img/GE.png" alt="" style="position: absolute;top: 13%; left: 60%;">
+								<img class="yellow" src="/static/img/YE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+								<img class="red" src="/static/img/RE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
+							</div>
+						</div>
+						<table id="myEnterTable" class="table table-striped tablesorter tablesorter-blue">
+							<thead>
+							<tr>
+								<th>航班号</th>
+								<th>机型</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
+								<th>注册号</th>
+								<th>二次代码</th>
+								<th>状态</th>
+								<th>预起时间</th>
+								<th>实际起飞时间</th>
+								<th>预落时间</th>
+								<th id="sortTime3">剩余时间</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr th:each="port : ${leavePorts}"
+									th:class="${port.minutes < 10}? 'danger ' : 'success'"
+									th:name="${port.minutes}">
+								<td th:text="${port.ARCID}"></td>
+								<td th:text="${port.WKTRC}"></td>
+								<td th:text="${port.ADEP}"></td>
+								<td th:text="${port.ADES}"></td>
+								<td th:text="${port.ARCREG}"></td>
+								<td th:text="${port.SsrCode}"></td>
+								<td th:text="${port.STATUS}"></td>
+								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="出港"></td>
+								<td class="portMin" th:text="${port.minutes}"></td>
+							</tr>
+							<tr th:each="port : ${enterPorts}"
+									th:class="${port.minutes < 10}? 'danger ' : 'success'"
+									th:name="${port.minutes}">
+								<td th:text="${port.ARCID}"></td>
+								<td th:text="${port.WKTRC}"></td>
+								<td th:text="${port.ADEP}"></td>
+								<td th:text="${port.ADES}"></td>
+								<td th:text="${port.ARCREG}"></td>
+								<td th:text="${port.SsrCode}"></td>
+								<td th:text="${port.STATUS}"></td>
+								<td>进港</td>
+								<td></td>
+								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td class="portMin" th:text="${port.minutes}"></td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+
+		</div>
+	</div>
+</div>
+<div class="clearfix"></div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script>
+	$(function () {
+		$("#myLeaveTable").tablesorter();
+		$("#myEnterTable").tablesorter();
+	});
+</script>
+<script>
+	function getSize(port, minute) {
+		var size = 0;
+		for (var i = 0; i < port.length; i++) {
+			if (port[i].minutes <= minute) {
+				size++;
+			}
+		}
+		return size;
+	}
+</script>
+<script>
+	Array.prototype.max = function () {
+		// 将数组第一个元素的值赋给max
+		var max = this[0];
+		// 使用for 循环从数组第一个值开始做遍历
+		for (var i = 1; i < this.length; i++) {
+			// 如果元素当前值大于max,就把这个当前值赋值给max
+			if (this[i] > max) {
+				max = this[i];
+			}
+		}
+		// 返回最大的值
+		return max;
+	};
+	function clone(obj) {
+		// Handle the 3 simple types, and null or undefined
+		if (null == obj || "object" != typeof obj) return obj;
+		
+		// Handle Date
+		if (obj instanceof Date) {
+			var copy = new Date();
+			copy.setTime(obj.getTime());
+			return copy;
+		}
+		
+		// Handle Array
+		if (obj instanceof Array) {
+			var copy = [];
+			for (var i = 0, len = obj.length;
+					 i < len;
+					 ++i
+			) {
+				copy[i] = clone(obj[i]);
+			}
+			return copy;
+		}
+		
+		// Handle Object
+		if (obj instanceof Object) {
+			var copy = {};
+			for (var attr in obj) {
+				if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+			}
+			return copy;
+		}
+		
+		throw new Error("Unable to copy obj! Its type isn't supported.");
+	}
+	function processList(leaveCountLists, leaveNumberLists) {
+		var newleaveCountLists = clone(leaveCountLists);
+		var newleaveNumberLists = clone(leaveNumberLists);
+		for (var i = 1; i < leaveCountLists.length; i++) {
+			var count = 0;
+			var number = "";
+			if (i < 25 / timeStep) {
+				for (var j = 0; j <= i; j++) {
+					count += newleaveCountLists[j];
+					number += newleaveNumberLists[j];
+				}
+				leaveCountLists[i] = count;
+				leaveNumberLists[i] = number;
+			}
+			else if (i != 12) {
+				for (var j = i - 25 / timeStep; j <= i; j++) {
+					count += newleaveCountLists[j];
+					number += newleaveNumberLists[j];
+				}
+				leaveCountLists[i] = count;
+				leaveNumberLists[i] = number;
+			}
+			
+		}
+	}
+	function initDirection(ports) {
+		var _ports = clone(ports);
+		var data = {};
+		data.E_count = 0;
+		data.E_context = "";
+		data.N_count = 0;
+		data.N_context = "";
+		data.S_count = 0;
+		data.S_context = "";
+		data.W_count = 0;
+		data.W_context = "";
+		for (var i = 0; i < _ports.length; i++) {
+			if (_ports[i].minutes <= timeSelect) {
+				if (_ports[i].direction == "E") {
+					data.E_count += 1;
+					data.E_context += _ports[i].ARCID + ",";
+					if (data.E_count % 5 == 4) {
+						data.E_context += "<br>"
+					}
+				}
+				else if (_ports[i].direction == "N") {
+					data.N_count += 1;
+					data.N_context += _ports[i].ARCID + ",";
+					if (data.N_count % 5 == 4) {
+						data.N_context += "<br>"
+					}
+				}
+				else if (_ports[i].direction == "S") {
+					data.S_count += 1;
+					data.S_context += _ports[i].ARCID + ",";
+					if (data.S_count % 5 == 4) {
+						data.S_context += "<br>"
+					}
+				}
+				else if (_ports[i].direction == "W") {
+					data.W_count += 1;
+					data.W_context += _ports[i].ARCID + ",";
+					if (data.W_count % 5 == 4) {
+						data.W_context += "<br>"
+					}
+				}
+			}
+		}
+		return data
+	}
+	function setDirectionChart(dirData,id) {
+		// 基于准备好的dom，初始化echarts实例
+		var directionChart = echarts.init(document.getElementById(id));
+		option = {
+			title: {
+				text: '方向分步图',
+				x: 'center',
+				left: 'left'
+			},
+			tooltip: {
+				trigger: 'item',
+				formatter: function (params, ticket, callback) {
+					var reslut = "";
+					reslut = params.seriesName + "--" + params.name;
+					reslut += " : " + params.data.value;
+					reslut += "<br>" + params.data.context;
+					return reslut;
+				}
+			},
+			legend: {
+				x: 'center',
+				y: 'bottom',
+				data: ['东', '南', '西', '北']
+			}
+			,
+			toolbox: {
+				show: true,
+				feature: {
+					mark: {
+						show: true
+					}
+					,
+					dataView: {
+						show: true, readOnly: false
+					}
+					,
+					magicType: {
+						show: true,
+						type: ['pie', 'funnel']
+					}
+					,
+					restore: {
+						show: true
+					}
+					,
+					saveAsImage: {
+						show: true
+					}
+				}
+			}
+			,
+			calculable: true,
+			series: [
+				{
+					name: '方向分步图',
+					type: 'pie',
+					radius: [15, 75],
+					center: ['50%', 125],
+					roseType: 'area',
+					startAngle: 45,
+					data: [
+						{value: dirData.W_count, name: '东', context: dirData.W_context},
+						{value: dirData.S_count, name: '南', context: dirData.S_context},
+						{value: dirData.E_count, name: '西', context: dirData.E_context},
+						{value: dirData.N_count, name: '北', context: dirData.N_context}
+					]
+				}
+			]
+		}
+		;
+		directionChart.setOption(option);
+	}
+	function setDirectionImg(dirData,id){
+		var imgDiv = $('#' + id);
+		imgDiv.find('div img').fadeOut(333);
+
+		if (dirData.W_count <= 2){
+			imgDiv.find('.imgE img.green').fadeIn(333);
+		}else if ((dirData.W_count <= 4)) {
+			imgDiv.find('.imgE img.yellow').fadeIn(333);
+		}else{
+			imgDiv.find('.imgE img.red').fadeIn(333);
+		}
+		if (dirData.E_count <= 2){
+			imgDiv.find('.imgW img.green').fadeIn(333);
+		}else if ((dirData.E_count <= 4)) {
+			imgDiv.find('.imgW img.yellow').fadeIn(333);
+		}else{
+			imgDiv.find('.imgW img.red').fadeIn(333);
+		}
+		if (dirData.S_count <= 2){
+			imgDiv.find('.imgS img.green').fadeIn(333);
+		}else if ((dirData.S_count <= 4)) {
+			imgDiv.find('.imgS img.yellow').fadeIn(333);
+		}else{
+			imgDiv.find('.imgS img.red').fadeIn(333);
+		}
+		if (dirData.N_count <= 2){
+			imgDiv.find('.imgN img.green').fadeIn(333);
+		}else if ((dirData.N_count <= 4)) {
+			imgDiv.find('.imgN img.yellow').fadeIn(333);
+		}else{
+			imgDiv.find('.imgN img.red').fadeIn(333);
+		}
+	}
+</script>
+<script th:inline="javascript">
+	var timeSelect = 240;
+	//	var leaveCounts = /*[[${leaveCounts}]]*/;
+	//	var leaveNumbers = /*[[${leaveNumbers}]]*/;
+	var leaveNumbers = [];
+	var leaveCounts = [];
+	
+	var leavePorts = /*[[${leavePorts}]]*/;
+	var nowDate = /*[[${JNowTime}]]*/;
+	var timeStep = 5;
+	nowDate = new Date(nowDate);
+	nowDate.setHours(nowDate.getHours() - 1);
+	function initLeave() {
+		leaveNumbers = [];
+		leaveCounts = [];
+		var len = parseInt(timeSelect / timeStep) + 1;
+		for (var i = 0; i < leavePorts.length; i++) {
+			var n = parseInt((leavePorts[i].minutes+60) / timeStep) ;
+			if (leavePorts[i].minutes > 0 && n == 12) {
+				n = 13;
+			}
+			if (leaveCounts[n] == undefined) {
+				leaveCounts[n] = 0;
+			}
+			leaveCounts[n]++;
+			if (leaveNumbers[n] == undefined) {
+				leaveNumbers[n] = "";
+			}
+			leaveNumbers[n] += "<br>" + leavePorts[i].ARCID;
+		}
+		for (var i = 0; i < len; i++) {
+			if (leaveCounts[i] == undefined) {
+				leaveCounts[i] = 0;
+			}
+			if (leaveNumbers[i] == undefined) {
+				leaveNumbers[i] = "";
+			}
+		}
+		leaveCounts.length = len;
+		leaveNumbers.length = len;
+		processList(leaveCounts, leaveNumbers);
+		setChart(leaveCounts, leaveNumbers);
+		var dirData = initDirection(leavePorts);
+		setDirectionChart(dirData, "leaveChartDirectionChart");
+		setDirectionImg(dirData, "leaveImg");
+	}
+	function setChart(leaveCounts, leaveNumbers) {
+		var leaveXData = [];
+		for (var i = 0; i < leaveCounts.length; i++) {
+			var h = nowDate.getHours();
+			var m = nowDate.getMinutes();
+			m += i * timeStep;
+			if (m >= 60) {
+				h += parseInt(m / 60);
+				m = m % 60;
+			}
+			if (m < 10) {
+				m = "0" + m;
+			}
+			leaveXData[i] = h % 24 + ":" + m;
+		}
+		// 基于准备好的dom，初始化echarts实例
+		var leaveChart = echarts.init(document.getElementById('leaveChart'));
+		option = {
+			tooltip: {
+				trigger: 'axis'
+			},
+			legend: {
+				data: ['预计航班'],
+				left: 'left'
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			xAxis: [
+				{
+					type: 'category',
+					boundaryGap: false,
+					data: leaveXData,
+					max: 241,
+					axisLabel: {
+						show: true,
+						rotate: 30,
+						margin: 5,
+						clickable: true
+					}
+				}
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitNumber: 2,
+					axisLabel: {
+						show: true,
+						interval: 0,
+						rotate: 0,
+						margin: 10,
+						clickable: true
+					}
+				}
+			],
+			series: [
+				{
+					name: '预计航班',
+					type: 'line',
+					stack: '总量',
+					data: leaveCounts,
+					markLine: {
+						data: [
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: leaveCounts.max()<1?1:leaveCounts.max()}]
+						]
+					}
+				}
+			],
+			formatter: function (params, ticket, callback) {
+				if (params[0].name) {
+					if (params[0].data != 0) {
+						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+					}
+					return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+					
+				}
+				else {
+					return "航班";
+				}
+			}
+		};
+		leaveChart.setOption(option);
+	}
+</script>
+
+<script th:inline="javascript">
+	//	var enterCounts = /*[[${enterCounts}]]*/;
+	//	var enterNumbers = /*[[${enterNumbers}]]*/;
+	var enterPorts = /*[[${enterPorts}]]*/;
+	var enterCounts = [];
+	var enterNumbers = [];
+	function initEnter() {
+		enterCounts = [];
+		enterNumbers = [];
+		var len = parseInt(timeSelect / timeStep) + 1;
+		for (var i = 0; i < enterPorts.length; i++) {
+			var n = parseInt((enterPorts[i].minutes+60)/ timeStep);
+			if (enterPorts[i].minutes > 0 && n == 12) {
+				n = 13;
+			}
+			if (enterCounts[n] == undefined) {
+				enterCounts[n] = 0;
+			}
+			enterCounts[n]++;
+			if (enterNumbers[n] == undefined) {
+				enterNumbers[n] = "";
+			}
+			enterNumbers[n] += "<br>" + enterPorts[i].ARCID;
+		}
+		for (var i = 0; i < len; i++) {
+			if (enterCounts[i] == undefined) {
+				enterCounts[i] = 0;
+			}
+			if (enterNumbers[i] == undefined) {
+				enterNumbers[i] = "";
+			}
+		}
+		enterCounts.length = len;
+		enterNumbers.length = len;
+		processList(enterCounts, enterNumbers);
+		setChart2(enterCounts, enterNumbers);
+		var dirData = initDirection(enterPorts);
+		setDirectionChart(dirData, "enterChartDirectionChart");
+		setDirectionImg(dirData, "enterImg");
+	}
+	function setChart2(enterCounts, enterNumbers) {
+		var enterXData = [];
+		for (var i = 0; i < enterCounts.length; i++) {
+			var h = nowDate.getHours();
+			var m = nowDate.getMinutes();
+			m += i * timeStep;
+			if (m >= 60) {
+				h += parseInt(m / 60);
+				m = m % 60;
+			}
+			
+			enterXData[i] = h % 24 + ":" + m;
+		}
+		// 基于准备好的dom，初始化echarts实例
+		var enterChart = echarts.init(document.getElementById('enterChart'));
+		option = {
+			tooltip: {
+				trigger: 'axis'
+			},
+			legend: {
+				data: ['预计航班'],
+				left: 'left'
+			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			xAxis: [
+				{
+					type: 'category',
+					boundaryGap: false,
+					data: enterXData,
+					axisLabel: {
+						show: true,
+						rotate: 30,
+						margin: 5,
+						clickable: true
+					}
+				}
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitNumber: 2,
+					axisLabel: {
+						show: true,
+						interval: 0,
+						rotate: 0,
+						margin: 10,
+						clickable: true
+					}
+				}
+			],
+			series: [
+				{
+					name: '预计航班',
+					type: 'line',
+					stack: '总量',
+					data: enterCounts,
+					markLine: {
+						data: [
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: enterCounts.max()<1?1:enterCounts.max()}]
+						]
+					}
+				}
+			],
+			formatter: function (params, ticket, callback) {
+				if (params[0].name) {
+					if (params[0].data != 0) {
+						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + enterNumbers[params[0].dataIndex];
+					}
+					return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+					
+				}
+				else {
+					return "航班";
+				}
+			}
+		};
+		enterChart.setOption(option);
+	}
+</script>
+<script th:inline="javascript">
+	
+	function initAll() {
+		enterCounts = [];
+		enterNumbers = [];
+		var len = parseInt(timeSelect / timeStep) + 1;
+		for (var i = 0; i < enterPorts.length; i++) {
+			var n = parseInt((enterPorts[i].minutes+60)  / timeStep);
+			if (enterPorts[i].minutes > 0 && n == 12) {
+				n = 13;
+			}
+			if (enterCounts[n] == undefined) {
+				enterCounts[n] = 0;
+			}
+			enterCounts[n]++;
+			if (enterNumbers[n] == undefined) {
+				enterNumbers[n] = "";
+			}
+			enterNumbers[n] += "<br>" + enterPorts[i].ARCID;
+		}
+		for (var i = 0; i < len; i++) {
+			if (enterCounts[i] == undefined) {
+				enterCounts[i] = 0;
+			}
+			if (enterNumbers[i] == undefined) {
+				enterNumbers[i] = "";
+			}
+		}
+		enterCounts.length = len;
+		enterNumbers.length = len;
+		processList(enterCounts, enterNumbers);
+		leaveNumbers = [];
+		leaveCounts = [];
+		len = parseInt(timeSelect / timeStep) + 1;
+		for (var i = 0; i < leavePorts.length; i++) {
+			var n = parseInt((leavePorts[i].minutes+60) / timeStep);
+			if (leavePorts[i].minutes > 0 && n == 12) {
+				n = 13;
+			}
+			if (leaveCounts[n] == undefined) {
+				leaveCounts[n] = 0;
+			}
+			leaveCounts[n]++;
+			if (leaveNumbers[n] == undefined) {
+				leaveNumbers[n] = "";
+			}
+			leaveNumbers[n] += "<br>" + leavePorts[i].ARCID;
+		}
+		for (var i = 0; i < len; i++) {
+			if (leaveCounts[i] == undefined) {
+				leaveCounts[i] = 0;
+			}
+			if (leaveNumbers[i] == undefined) {
+				leaveNumbers[i] = "";
+			}
+		}
+		leaveCounts.length = len;
+		leaveNumbers.length = len;
+		processList(leaveCounts, leaveNumbers);
+		setAllChart(enterCounts, enterNumbers, leaveCounts, leaveNumbers);
+		var dirData = initDirection(enterPorts.concat(leavePorts));
+		setDirectionChart(dirData,'allChartDirectionChart' );
+		setDirectionImg(dirData,"AllImg")
+	}
+	function addData(enterCounts,leaveCounts) {
+		var allCounts = [];
+		for (var i = 0; i < enterCounts.length; i++) {
+			allCounts[i] = enterCounts[i] + leaveCounts[i];
+		}
+		return allCounts;
+	}
+	function setAllChart(enterCounts, enterNumbers, leaveCounts, leaveNumbers) {
+		var XData = [];
+		for (var i = 0; i < enterCounts.length; i++) {
+			var h = nowDate.getHours();
+			var m = nowDate.getMinutes();
+			m += i * timeStep;
+			if (m >= 60) {
+				h += parseInt(m / 60);
+				m = m % 60;
+			}
+			XData[i] = h % 24 + ":" + m;
+		}
+		// 基于准备好的dom，初始化echarts实例
+		var countAll = addData(enterCounts, leaveCounts);
+		var enterChart = echarts.init(document.getElementById('allChart'));
+		option = {
+			tooltip : {
+				trigger: 'axis'
+			},
+			legend: {
+				data:['出港进港总数','出港','进港'],
+				left: 'left'
+			},
+
+//			legend: {
+//				data: ['全部航班','出港航班','进港航班']
+//			},
+			grid: {
+				left: '3%',
+				right: '4%',
+				bottom: '3%',
+				containLabel: true
+			},
+			toolbox: {
+				feature: {
+					saveAsImage: {}
+				}
+			},
+			xAxis: [
+				{
+					type: 'category',
+					boundaryGap: false,
+					data: XData,
+					axisLabel: {
+						show: true,
+						rotate: 30,
+						margin: 5,
+						clickable: true
+					}
+				}
+			],
+			yAxis: [
+				{
+					type: 'value',
+					splitNumber: 2,
+					axisLabel: {
+						show: true,
+						interval: 0,
+						rotate: 0,
+						margin: 10,
+						clickable: true
+					}
+				}
+			],
+			series: [
+				{
+					name: '出港',
+					type: 'line',
+					data: leaveCounts
+				},
+				{
+					name: '进港',
+					type: 'line',
+					data: enterCounts
+				},
+				{
+					name: '出港进港总数',
+					type: 'line',
+					data: countAll,
+					markLine: {
+						data: [
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: countAll.max()<1?1:countAll.max()}]
+						]
+					}
+				}
+			],
+			formatter: function (params, ticket, callback) {
+				var result = "";
+				if (params[0].name) {
+					if (params[0].data != 0) {
+						result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+					}
+					else {
+						result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
+					}
+				}
+				else {
+					result += "进港暂无";
+				}
+				result += "<br>";
+				if (params[1].name) {
+					if (params[1].data != 0) {
+						result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data + "<br>航班号" + enterNumbers[params[1].dataIndex];
+					}
+					else {
+						result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data;
+					}
+					
+				}
+				else {
+					result = params;
+				}
+				return result;
+			}
+		};
+		enterChart.setOption(option);
+	}
+</script>
+<script>
+	function tableChange() {
+		var ths = $('tr');
+		for (var i = 0; i < ths.length; i++) {
+			var _th = $(ths.get(i));
+			if (_th.attr('name') > timeSelect - 60) {
+				_th.hide();
+			} else {
+				_th.show();
+			}
+		}
+	}
+	function timeChange() {
+		initLeave();
+		initEnter();
+		initAll();
+		$('#leavePortsSize').text(getSize(leavePorts, timeSelect - 60));
+		$('#enterPortsSize').text(getSize(enterPorts, timeSelect - 60));
+		$('#allPortsSize').text(getSize(enterPorts, timeSelect - 60) + getSize(leavePorts, timeSelect - 60));
+	}
+	$('#1hours').change(function () {
+		timeSelect = 120;
+		timeChange();
+		tableChange();
+	});
+	$('#2hours').change(function () {
+		timeSelect = 180;
+		timeChange();
+		tableChange();
+	});
+	$('#3hours').change(function () {
+		timeSelect = 240;
+		timeChange();
+		tableChange();
+	});
+	$('#3hours').change();
+	$('#1min').change(function () {
+		timeStep = 1;
+		timeChange();
+	});
+	$('#5min').change(function () {
+		timeStep = 5;
+		timeChange();
+	});
+	$('#5min').change();
+</script>
+
+<script>
+	var enterTable = $("#enterTable");
+	var leaveTable = $("#leaveTable");
+	var allTable = $("#allTable");
+	enterTable.removeClass("active");
+	allTable.removeClass("active");
+	
+	$('#leaveButton').click(function () {
+		leaveTable.fadeIn(500);
+		enterTable.hide();
+		allTable.hide();
+		refresh();
+	});
+	$('#enterButton').click(function () {
+		enterTable.fadeIn(500);
+		leaveTable.hide();
+		allTable.hide();
+		refresh();
+	});
+	$('#allButton').click(function () {
+		allTable.fadeIn(500);
+		enterTable.hide();
+		leaveTable.hide();
+		refresh();
+	});
+	function refresh() {
+		switch (timeSelect) {
+			case 120 :
+				$('#1hours').change();
+				break;
+			case 180 :
+				$('#2hours').change();
+				break;
+			case 240 :
+				$('#3hours').change();
+				break;
+			default:
+				$('#3hours').change();
+				break;
+		}
+	}
+	var portMin = $('.portMin');
+	$('#paodao01').change(function () {
+		for (var i = 0; i < leavePorts.length; i++) {
+			leavePorts[i].minutes += 3;
+		}
+		for (var i = 0; i < enterPorts.length; i++) {
+			enterPorts[i].minutes += 3;
+		}
+		for (var i = 0; i < portMin.length; i++) {
+			portMin.get(i).innerHTML = (parseInt(portMin.get(i).innerHTML) + 3);
+		}
+		refresh();
+	});
+	$('#paodao19').change(function () {
+		for (var i = 0; i < leavePorts.length; i++) {
+			leavePorts[i].minutes -= 3;
+		}
+		for (var i = 0; i < enterPorts.length; i++) {
+			enterPorts[i].minutes -= 3;
+		}
+		for (var i = 0; i < portMin.length; i++) {
+			portMin.get(i).innerHTML = (parseInt(portMin.get(i).innerHTML) - 3);
+		}
+		refresh();
+	});
+	$('#paodao01').click();
+	$("#sortTime").click();
+	$("#sortTime2").click();
+	$("#allButton").click();
+</script>
+</body>
+</html>
