@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="common/header::common_header"></head>
-
+<script language="JavaScript"> 
+function myrefresh(){ 
+window.location.reload(); 
+} 
+setTimeout('myrefresh()',500000); //指定5秒刷新一次 
+</script> 
 <body>
 <div class="container-fluid">
 	<div class="row">

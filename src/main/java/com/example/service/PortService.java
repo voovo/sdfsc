@@ -61,25 +61,73 @@ public class PortService {
     }
     
     //出港航班
-    public List<LeavePort> getLeavePortTable(Date nowTime) {
+    public List<LeavePort> getLeavePortTable(Date nowTime) throws ParseException {
         
         String haveFlyingStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
         List<LeavePort> haveFlyingLeavePortList = portDao.getHaveFlyingLeavePortFromJinan(haveFlyingStartTime);
         logger.debug("haveFlyingLeavePortList:{}", gson.toJson(haveFlyingLeavePortList));
-        String startTime = DATE_FORMAT_2.format(DateUtils.addMinutes(PortService.getNOW(), 2));
-        String endTime = DATE_FORMAT_2.format(DateUtils.addDays(PortService.getNOW(), 2));
+        
+        String startTime = DATE_FORMAT_2.format(PortService.getNOW());
+        String endTime = DATE_FORMAT_2.format(DateUtils.addDays(PortService.getNOW(), 3));
         List<LeavePort> toFlyLeavePortList = portDao.getToFlyLeavePortFromJinan(startTime, endTime);
         logger.debug("toFlyLeavePortList:{}", gson.toJson(toFlyLeavePortList));
+        
+        List<LeavePort> jinjinList = new ArrayList<>();
+        for (LeavePort ep : toFlyLeavePortList) {
+        	List<EnterTimeVo> leaveTimeList = portDao.getJinJinTimeForJinan(ep.getIFPLID());
+        	if (null == leaveTimeList || leaveTimeList.size() <= 0) {
+        		continue;
+        	}
+        	EnterTimeVo tna = leaveTimeList.get(leaveTimeList.size() - 1);
+        	if (leaveTimeList.size() > 1) {
+        		for (int i=0; i<leaveTimeList.size() - 1; i++) {
+        			EnterTimeVo et = leaveTimeList.get(i);
+        			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
+        			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
+        			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
+        			int intervalMinutue = (int) (intervalMis / 60000) ;
+        			ep.setATD(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+        			jinjinList.add(ep);
+        		}
+        	}
+        }
+        
         
         List<LeavePort> nowLeavePortList = portDao.getNowLeavePortFromJinan();
         logger.debug("nowLeavePortList:{}", gson.toJson(nowLeavePortList));
         
-        List<LeavePort> allList = new ArrayList<>();
-        if (null != haveFlyingLeavePortList && haveFlyingLeavePortList.size() > 0) {
-            allList.addAll(haveFlyingLeavePortList);
+        List<LeavePort> nowjinjinList = new ArrayList<>();
+        if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
+            for (LeavePort port : nowLeavePortList) {
+                List<EnterTimeVo> enterTimeList = portDao.getJinJinTimeForJinan(port.getIFPLID());
+            	if (null == enterTimeList || enterTimeList.size() <= 0) {
+            		continue;
+            	}
+            	EnterTimeVo tna = null;
+            	for (EnterTimeVo et : enterTimeList) {
+            		if (et.getPTID().equals("TNA")) {
+            			tna = et;
+            			break;
+            		}
+            	}
+            	Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
+    			Date outJinJinTime = nowTime;
+    			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
+    			int intervalMinutue = (int) (intervalMis / 60000) ;
+    			port.setATD(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+    			nowjinjinList.add(port);
+            }
         }
-        if (null != toFlyLeavePortList && toFlyLeavePortList.size() > 0) {
-            allList.addAll(toFlyLeavePortList);
+        
+        List<LeavePort> allList = new ArrayList<>();
+//        if (null != haveFlyingLeavePortList && haveFlyingLeavePortList.size() > 0) {
+//            allList.addAll(haveFlyingLeavePortList);
+//        }
+        if (null != jinjinList && jinjinList.size() > 0) {
+            allList.addAll(jinjinList);
+        }
+        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+            allList.addAll(nowjinjinList);
         }
         
         for (Iterator<LeavePort> it = allList.iterator(); it.hasNext(); ) {
@@ -109,7 +157,16 @@ public class PortService {
                 allList.add(port);
             }
         }
-        return allList;
+        Set<String> doneSet = new HashSet<>();
+        List<LeavePort> retList = new ArrayList<>();
+        for (LeavePort port : allList) {
+        	if (!doneSet.contains(port.getARCID() + ":" + port.getATD())) {
+        		retList.add(port);
+        		doneSet.add(port.getARCID() + ":" + port.getATD());
+        	}
+        }
+        logger.info("############\n{}", gson.toJson(retList));
+        return retList;
     }
 
     //进港表航班
@@ -120,6 +177,10 @@ public class PortService {
         String haveArrivedStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
         List<EnterPort> haveArrivedEnterPortList = portDao.getHaveArrivedEnterPortFromJinan(haveArrivedStartTime);
         logger.debug("过去一小时进近入港数据:{}", gson.toJson(haveArrivedEnterPortList));
+        
+        List<EnterPort> nowEnterPortList = portDao.getNowEnterPortFromJinan();
+        logger.debug("nowEnterPortList:{}", gson.toJson(nowEnterPortList));
+        
         String startTime = DATE_FORMAT_2.format(PortService.getNOW());
         String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
         List<EnterPort> toArriveEnterPortList = portDao.getEnterJinJinFilghtForJinan(startTime, endTime);
@@ -146,12 +207,38 @@ public class PortService {
         	}
         }
         
-        List<EnterPort> allList = new ArrayList<>();
-        if (null != haveArrivedEnterPortList && haveArrivedEnterPortList.size() > 0) {
-            allList.addAll(haveArrivedEnterPortList);
+        List<EnterPort> nowjinjinList = new ArrayList<>();
+        if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
+            for (EnterPort port : nowEnterPortList) {
+                List<EnterTimeVo> enterTimeList = portDao.getJinJinTimeForJinan(port.getIFPLID());
+            	if (null == enterTimeList || enterTimeList.size() <= 0) {
+            		continue;
+            	}
+            	EnterTimeVo tna = null;
+            	for (EnterTimeVo et : enterTimeList) {
+            		if (et.getPTID().equals("TNA")) {
+            			tna = et;
+            			break;
+            		}
+            	}
+            	Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
+    			Date outJinJinTime = nowTime;
+    			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
+    			int intervalMinutue = (int) (intervalMis / 60000) ;
+    			port.setETA(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+    			nowjinjinList.add(port);
+            }
         }
+        
+        List<EnterPort> allList = new ArrayList<>();
+//        if (null != haveArrivedEnterPortList && haveArrivedEnterPortList.size() > 0) {
+//            allList.addAll(haveArrivedEnterPortList);
+//        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
+        }
+        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+            allList.addAll(nowjinjinList);
         }
         
         for (Iterator<EnterPort> it = allList.iterator(); it.hasNext(); ) {
@@ -171,13 +258,23 @@ public class PortService {
                 it.remove();
             }
         }
-//        if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
-//            for (EnterPort port : nowEnterPortList) {
-//                port.setMinutes(0);
-//                allList.add(port);
-//            }
-//        }
-        return allList;
+        
+        if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
+            for (EnterPort port : nowEnterPortList) {
+                port.setMinutes(0);
+                allList.add(port);
+            }
+        }
+        Set<String> doneSet = new HashSet<>();
+        List<EnterPort> retList = new ArrayList<>();
+        for (EnterPort port : allList) {
+        	if (!doneSet.contains(port.getARCID() + ":" + port.getETA())) {
+        		retList.add(port);
+        		doneSet.add(port.getARCID() + ":" + port.getETA());
+        	}
+        }
+        logger.info("############\n{}", gson.toJson(retList));
+        return retList;
     }
 
     public List<AllPort> getAllPortTable(Date nowTime) {

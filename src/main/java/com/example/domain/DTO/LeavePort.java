@@ -8,6 +8,8 @@ import java.util.Date;
  * Created by SunYi on 2016/2/16/0016.
  */
 public class LeavePort {
+	//ID
+	String IFPLID;
     //航班号（对应数据库中的ARCID）
     String ARCID;
     //机型（对应数据库中的WKTRC）
@@ -35,7 +37,15 @@ public class LeavePort {
 
     String direction;
 
-    public int getMinutes() {
+    public String getIFPLID() {
+		return IFPLID;
+	}
+
+	public void setIFPLID(String iFPLID) {
+		IFPLID = iFPLID;
+	}
+
+	public int getMinutes() {
         return minutes;
     }
 
@@ -100,6 +110,10 @@ public class LeavePort {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void setATD(Date ATD) {
+    	this.ATD = ATD;
     }
 
     public String getARCREG() {
