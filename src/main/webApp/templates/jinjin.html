@@ -317,6 +317,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 	function processList(leaveCountLists, leaveNumberLists) {
 		var newleaveCountLists = clone(leaveCountLists);
 		var newleaveNumberLists = clone(leaveNumberLists);
+		// console.log("CountList.length:" + leaveCountLists.length);
 		for (var i = 1; i < leaveCountLists.length; i++) {
 			var count = 0;
 			var number = "";
@@ -336,7 +337,6 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 				leaveCountLists[i] = count;
 				leaveNumberLists[i] = number;
 			}
-			
 		}
 	}
 	function initDirection(ports) {
@@ -511,14 +511,16 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			if (leaveCounts[n] == undefined) {
-				leaveCounts[n] = 0;
+			for (var j=0; j<parseInt(leavePorts[i].interval/ timeStep); j++) {
+				if (leaveCounts[n + j] == undefined) {
+					leaveCounts[n + j] = 0;
+				}
+				leaveCounts[n + j]++;
+				if (leaveNumbers[n + j] == undefined) {
+					leaveNumbers[n + j] = "";
+				}
+				leaveNumbers[n + j] += "<br>" + leavePorts[i].ARCID;
 			}
-			leaveCounts[n]++;
-			if (leaveNumbers[n] == undefined) {
-				leaveNumbers[n] = "";
-			}
-			leaveNumbers[n] += "<br>" + leavePorts[i].ARCID;
 		}
 		for (var i = 0; i < len; i++) {
 			if (leaveCounts[i] == undefined) {
@@ -530,7 +532,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		}
 		leaveCounts.length = len;
 		leaveNumbers.length = len;
-		processList(leaveCounts, leaveNumbers);
+		//processList(leaveCounts, leaveNumbers);
 		setChart(leaveCounts, leaveNumbers);
 		var dirData = initDirection(leavePorts);
 		setDirectionChart(dirData, "leaveChartDirectionChart");
@@ -639,19 +641,22 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		enterCounts = [];
 		enterNumbers = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
+		// console.log("TimeSelect:" + timeSelect +"\nTimeStep:" + timeStep +"\nlen:" + len);
 		for (var i = 0; i < enterPorts.length; i++) {
 			var n = parseInt((enterPorts[i].minutes+60)/ timeStep);
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			if (enterCounts[n] == undefined) {
-				enterCounts[n] = 0;
+			for (var j=0; j<parseInt(enterPorts[i].interval/ timeStep); j++) {
+				if (enterCounts[n + j] == undefined) {
+					enterCounts[n + j] = 0;
+				}
+				enterCounts[n + j]++;
+				if (enterNumbers[n + j] == undefined) {
+					enterNumbers[n + j] = "";
+				}
+				enterNumbers[n + j] += "<br>" + enterPorts[i].ARCID;
 			}
-			enterCounts[n]++;
-			if (enterNumbers[n] == undefined) {
-				enterNumbers[n] = "";
-			}
-			enterNumbers[n] += "<br>" + enterPorts[i].ARCID;
 		}
 		for (var i = 0; i < len; i++) {
 			if (enterCounts[i] == undefined) {
@@ -661,9 +666,12 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 				enterNumbers[i] = "";
 			}
 		}
+		for(var i=0;i<enterNumbers.length;i++){
+			console.log(i + ":" + enterNumbers[i]);
+		}
 		enterCounts.length = len;
 		enterNumbers.length = len;
-		processList(enterCounts, enterNumbers);
+		//processList(enterCounts, enterNumbers);
 		setChart2(enterCounts, enterNumbers);
 		var dirData = initDirection(enterPorts);
 		setDirectionChart(dirData, "enterChartDirectionChart");
@@ -769,14 +777,16 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			if (enterCounts[n] == undefined) {
-				enterCounts[n] = 0;
+			for (var j=0; j<parseInt(enterPorts[i].interval/ timeStep); j++) {
+				if (enterCounts[n + j] == undefined) {
+					enterCounts[n + j] = 0;
+				}
+				enterCounts[n + j]++;
+				if (enterNumbers[n + j] == undefined) {
+					enterNumbers[n + j] = "";
+				}
+				enterNumbers[n + j] += "<br>" + enterPorts[i].ARCID;
 			}
-			enterCounts[n]++;
-			if (enterNumbers[n] == undefined) {
-				enterNumbers[n] = "";
-			}
-			enterNumbers[n] += "<br>" + enterPorts[i].ARCID;
 		}
 		for (var i = 0; i < len; i++) {
 			if (enterCounts[i] == undefined) {
@@ -788,7 +798,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		}
 		enterCounts.length = len;
 		enterNumbers.length = len;
-		processList(enterCounts, enterNumbers);
+		//processList(enterCounts, enterNumbers);
 		leaveNumbers = [];
 		leaveCounts = [];
 		len = parseInt(timeSelect / timeStep) + 1;
@@ -797,14 +807,16 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			if (leaveCounts[n] == undefined) {
-				leaveCounts[n] = 0;
+			for (var j=0; j<parseInt(leavePorts[i].interval/ timeStep); j++) {
+				if (leaveCounts[n + j] == undefined) {
+					leaveCounts[n + j] = 0;
+				}
+				leaveCounts[n + j]++;
+				if (leaveNumbers[n + j] == undefined) {
+					leaveNumbers[n + j] = "";
+				}
+				leaveNumbers[n + j] += "<br>" + leavePorts[i].ARCID;
 			}
-			leaveCounts[n]++;
-			if (leaveNumbers[n] == undefined) {
-				leaveNumbers[n] = "";
-			}
-			leaveNumbers[n] += "<br>" + leavePorts[i].ARCID;
 		}
 		for (var i = 0; i < len; i++) {
 			if (leaveCounts[i] == undefined) {
@@ -816,7 +828,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		}
 		leaveCounts.length = len;
 		leaveNumbers.length = len;
-		processList(leaveCounts, leaveNumbers);
+		//processList(leaveCounts, leaveNumbers);
 		setAllChart(enterCounts, enterNumbers, leaveCounts, leaveNumbers);
 		var dirData = initDirection(enterPorts.concat(leavePorts));
 		setDirectionChart(dirData,'allChartDirectionChart' );

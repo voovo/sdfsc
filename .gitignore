@@ -10,6 +10,4 @@
 **/.metadata
 
 **/bin/
-
-src/main/java/com/example/config/DataBaseConfig.java
 /target/

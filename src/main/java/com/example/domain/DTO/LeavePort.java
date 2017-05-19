@@ -32,6 +32,7 @@ public class LeavePort {
     
     String SECTOR;
 
+    int interval;
     //分钟段
     int minutes;
 
@@ -167,6 +168,14 @@ public class LeavePort {
 
 	public void setSECTOR(String sECTOR) {
 		SECTOR = sECTOR;
+	}
+
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
 	}
     
 }

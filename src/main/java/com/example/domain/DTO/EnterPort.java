@@ -29,6 +29,8 @@ public class EnterPort {
     String RTE;
     
     String SECTOR;
+    
+    int interval;
     //分钟段
     int minutes;
     String direction;
@@ -148,5 +150,13 @@ public class EnterPort {
 	public void setSECTOR(String sECTOR) {
 		SECTOR = sECTOR;
 	}
-    
+
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+	
 }

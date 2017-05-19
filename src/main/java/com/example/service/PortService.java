@@ -84,9 +84,11 @@ public class PortService {
         			EnterTimeVo et = leaveTimeList.get(i);
         			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
-        			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
+        			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			ep.setATD(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+        			ep.setATD(outJinJinTime);
+        			ep.setInterval(intervalMinutue);
+        			
         			jinjinList.add(ep);
         		}
         	}
@@ -114,7 +116,8 @@ public class PortService {
     			Date outJinJinTime = nowTime;
     			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
-    			port.setATD(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+    			port.setATD(nowTime);
+    			port.setInterval(intervalMinutue);
     			nowjinjinList.add(port);
             }
         }
@@ -165,7 +168,7 @@ public class PortService {
         		doneSet.add(port.getARCID() + ":" + port.getATD());
         	}
         }
-        logger.info("############\n{}", gson.toJson(retList));
+        logger.info("######LeavePortList######\n{}", gson.toJson(retList));
         return retList;
     }
 
@@ -199,10 +202,9 @@ public class PortService {
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
         			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			EnterPort tep = new EnterPort();
-        			BeanUtils.copyProperties(ep, tep);
-        			tep.setETA(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
-        			jinjinList.add(tep);
+        			ep.setInterval(intervalMinutue);
+        			ep.setETA(et.getETO());
+        			jinjinList.add(ep);
         		}
         	}
         }
@@ -225,7 +227,8 @@ public class PortService {
     			Date outJinJinTime = nowTime;
     			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
-    			port.setETA(DateUtils.addMinutes(outJinJinTime, 0-intervalMinutue));
+    			port.setETA(nowTime);
+    			port.setInterval(intervalMinutue);
     			nowjinjinList.add(port);
             }
         }
@@ -252,7 +255,7 @@ public class PortService {
                     it.remove();
                 } else {
                     port.setMinutes(minute);
-                    logger.debug("EnterPort:{}", gson.toJson(port));
+//                    logger.debug("EnterPort:{}", gson.toJson(port));
                 }
             } else {
                 it.remove();
@@ -273,7 +276,7 @@ public class PortService {
         		doneSet.add(port.getARCID() + ":" + port.getETA());
         	}
         }
-        logger.info("############\n{}", gson.toJson(retList));
+        logger.info("######EnterPortList######\n{}", gson.toJson(retList));
         return retList;
     }
 
