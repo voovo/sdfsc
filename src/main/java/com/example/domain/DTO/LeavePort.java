@@ -35,8 +35,11 @@ public class LeavePort {
     int interval;
     //分钟段
     int minutes;
-
+    
     String direction;
+
+    Date TNA;
+    Date ETO;
 
     public String getIFPLID() {
 		return IFPLID;
@@ -176,6 +179,22 @@ public class LeavePort {
 
 	public void setInterval(int interval) {
 		this.interval = interval;
+	}
+
+	public Date getTNA() {
+		return TNA;
+	}
+
+	public void setTNA(Date tNA) {
+		TNA = tNA;
+	}
+
+	public Date getETO() {
+		return ETO;
+	}
+
+	public void setETO(Date eTO) {
+		ETO = eTO;
 	}
     
 }

@@ -5,7 +5,7 @@
 function myrefresh(){ 
 window.location.reload(); 
 } 
-setTimeout('myrefresh()',500000); //指定5秒刷新一次 
+setTimeout('myrefresh()',60000); //指定5秒刷新一次 
 </script> 
 <body>
 <div class="container-fluid">
@@ -27,7 +27,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 			</div>
 			<br>
 			<div id="leaveTable" class="services" style="display: none">
-				<h3>进港表(总数：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>
+				<h3>出港表(总数：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>
 				<!--service-page-->
 				<div class="servcs-page  text-center">
 					<div class="table-chugang">
@@ -61,7 +61,6 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 							<thead>
 							<tr>
 								<th>航班号</th>
-								<th>机型</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
 								<th>注册号</th>
@@ -69,6 +68,8 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<th>状态</th>
 								<th>预起时间</th>
 								<th>实际起飞时间</th>
+								<th>过点时间1</th>
+								<th>过点时间2</th>
 								<th id="sortTime">剩余时间</th>
 							</tr>
 							</thead>
@@ -76,7 +77,6 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 							<tr th:each="port : ${leavePorts}" th:class="${port.minutes < 10}? 'danger ' : 'success'"
 									th:name="${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
-								<td th:text="${port.WKTRC}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.ARCREG}"></td>
@@ -84,6 +84,8 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -124,17 +126,19 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 							</div>
 						</div>
 
-						<table id="myAllTable" class="table table-striped tablesorter tablesorter-blue">
+						<table id="myEnterTable" class="table table-striped tablesorter tablesorter-blue">
 							<thead>
 							<tr>
 								<th>航班号</th>
-								<th>机型</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
 								<th>注册号</th>
 								<th>二次代码</th>
 								<th>状态</th>
 								<th>预落时间</th>
+								<th>实际降落时间</th>
+								<th>过点时间1</th>
+								<th>过点时间2</th>
 								<th id="sortTime2">剩余时间</th>
 							</tr>
 							</thead>
@@ -143,13 +147,15 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
 									th:name="${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
-								<td th:text="${port.WKTRC}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.ARCREG}"></td>
 								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')}"></td>
+								<td th:text="${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')}"></td>
+								<td th:text="${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')}"></td>
+								<td th:text="${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')}"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -187,7 +193,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<img class="red" src="/static/img/RE.png" alt="" style="position: absolute;top: 13%; left: 60%;display: none">
 							</div>
 						</div>
-						<table id="myEnterTable" class="table table-striped tablesorter tablesorter-blue">
+						<table id="myAllTable" class="table table-striped tablesorter tablesorter-blue">
 							<thead>
 							<tr>
 								<th>航班号</th>
@@ -200,6 +206,8 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<th>预起时间</th>
 								<th>实际起飞时间</th>
 								<th>预落时间</th>
+								<th>TNA</th>
+								<th>过点时间</th>
 								<th id="sortTime3">剩余时间</th>
 							</tr>
 							</thead>
@@ -216,6 +224,8 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="出港"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
@@ -232,6 +242,8 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 								<td>进港</td>
 								<td></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -502,12 +514,16 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 	var timeStep = 5;
 	nowDate = new Date(nowDate);
 	nowDate.setHours(nowDate.getHours() - 1);
+	var nowMinutes = nowDate.getMinutes();
+	var showMinutes = Math.round(nowMinutes/5) * 5;
+	var minutesSub = nowMinutes - showMinutes;
+	nowDate.setMinutes(showMinutes);
 	function initLeave() {
 		leaveNumbers = [];
 		leaveCounts = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < leavePorts.length; i++) {
-			var n = parseInt((leavePorts[i].minutes+60) / timeStep) ;
+			var n = parseInt((leavePorts[i].minutes+60 + minutesSub) / timeStep) ;
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -592,6 +608,9 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 				{
 					type: 'value',
 					splitNumber: 2,
+					min:0,
+					max:15,
+					interval:1,
 					axisLabel: {
 						show: true,
 						interval: 0,
@@ -609,7 +628,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 					data: leaveCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: leaveCounts.max()<1?1:leaveCounts.max()}]
+							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub)/ timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -643,7 +662,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		var len = parseInt(timeSelect / timeStep) + 1;
 		// console.log("TimeSelect:" + timeSelect +"\nTimeStep:" + timeStep +"\nlen:" + len);
 		for (var i = 0; i < enterPorts.length; i++) {
-			var n = parseInt((enterPorts[i].minutes+60)/ timeStep);
+			var n = parseInt((enterPorts[i].minutes+60 + minutesSub)/ timeStep);
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -728,6 +747,9 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 				{
 					type: 'value',
 					splitNumber: 2,
+					min:0,
+					max:15,
+					interval:1,
 					axisLabel: {
 						show: true,
 						interval: 0,
@@ -745,7 +767,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 					data: enterCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: enterCounts.max()<1?1:enterCounts.max()}]
+							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -773,7 +795,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		enterNumbers = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < enterPorts.length; i++) {
-			var n = parseInt((enterPorts[i].minutes+60)  / timeStep);
+			var n = parseInt((enterPorts[i].minutes+60 + minutesSub)  / timeStep);
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -803,7 +825,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 		leaveCounts = [];
 		len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < leavePorts.length; i++) {
-			var n = parseInt((leavePorts[i].minutes+60) / timeStep);
+			var n = parseInt((leavePorts[i].minutes+60 + minutesSub) / timeStep);
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -896,6 +918,9 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 				{
 					type: 'value',
 					splitNumber: 2,
+					min:0,
+					max:15,
+					interval:1,
 					axisLabel: {
 						show: true,
 						interval: 0,
@@ -922,7 +947,7 @@ setTimeout('myrefresh()',500000); //指定5秒刷新一次
 					data: countAll,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: countAll.max()<1?1:countAll.max()}]
+							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 15}]
 						]
 					}
 				}

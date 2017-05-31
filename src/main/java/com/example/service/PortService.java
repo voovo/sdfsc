@@ -85,9 +85,11 @@ public class PortService {
         			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
         			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
-        			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			ep.setATD(outJinJinTime);
-        			ep.setInterval(intervalMinutue);
+        			int intervalMinutue = (int) (intervalMis / 60000);
+        			ep.setATD(tnaTime);
+        			ep.setTNA(tnaTime);
+        			ep.setETO(outJinJinTime);
+        			ep.setInterval(intervalMinutue + 5);
         			
         			jinjinList.add(ep);
         		}
@@ -117,7 +119,9 @@ public class PortService {
     			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
     			port.setATD(nowTime);
-    			port.setInterval(intervalMinutue);
+    			port.setTNA(tnaTime);
+    			port.setETO(outJinJinTime);
+    			port.setInterval(intervalMinutue + 5);
     			nowjinjinList.add(port);
             }
         }
@@ -129,9 +133,9 @@ public class PortService {
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-        if (null != nowjinjinList && nowjinjinList.size() > 0) {
-            allList.addAll(nowjinjinList);
-        }
+//        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+//            allList.addAll(nowjinjinList);
+//        }
         
         for (Iterator<LeavePort> it = allList.iterator(); it.hasNext(); ) {
             LeavePort port = it.next();
@@ -202,8 +206,10 @@ public class PortService {
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
         			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			ep.setInterval(intervalMinutue);
+        			ep.setInterval(intervalMinutue + 5);
         			ep.setETA(et.getETO());
+        			ep.setTNA(tnaTime);
+        			ep.setETO(outJinJinTime);
         			jinjinList.add(ep);
         		}
         	}
@@ -228,21 +234,21 @@ public class PortService {
     			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
     			port.setETA(nowTime);
-    			port.setInterval(intervalMinutue);
+    			port.setInterval(intervalMinutue + 5);
+    			
+    			port.setTNA(tnaTime);
+    			port.setETO(outJinJinTime);
     			nowjinjinList.add(port);
             }
         }
         
         List<EnterPort> allList = new ArrayList<>();
-//        if (null != haveArrivedEnterPortList && haveArrivedEnterPortList.size() > 0) {
-//            allList.addAll(haveArrivedEnterPortList);
-//        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-        if (null != nowjinjinList && nowjinjinList.size() > 0) {
-            allList.addAll(nowjinjinList);
-        }
+//        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+//            allList.addAll(nowjinjinList);
+//        }
         
         for (Iterator<EnterPort> it = allList.iterator(); it.hasNext(); ) {
             EnterPort port = it.next();
@@ -255,7 +261,6 @@ public class PortService {
                     it.remove();
                 } else {
                     port.setMinutes(minute);
-//                    logger.debug("EnterPort:{}", gson.toJson(port));
                 }
             } else {
                 it.remove();
@@ -271,9 +276,9 @@ public class PortService {
         Set<String> doneSet = new HashSet<>();
         List<EnterPort> retList = new ArrayList<>();
         for (EnterPort port : allList) {
-        	if (!doneSet.contains(port.getARCID() + ":" + port.getETA())) {
+        	if (!doneSet.contains(port.getARCID() + ":" + port.getInterval())) {
         		retList.add(port);
-        		doneSet.add(port.getARCID() + ":" + port.getETA());
+        		doneSet.add(port.getARCID() + ":" + port.getInterval());
         	}
         }
         logger.info("######EnterPortList######\n{}", gson.toJson(retList));

@@ -34,6 +34,10 @@ public class EnterPort {
     //分钟段
     int minutes;
     String direction;
+    
+    Date TNA;
+    Date ETO;
+    
     public int getMinutes() {
         return minutes;
     }
@@ -158,5 +162,20 @@ public class EnterPort {
 	public void setInterval(int interval) {
 		this.interval = interval;
 	}
-	
+
+	public Date getTNA() {
+		return TNA;
+	}
+
+	public void setTNA(Date tNA) {
+		TNA = tNA;
+	}
+
+	public Date getETO() {
+		return ETO;
+	}
+
+	public void setETO(Date eTO) {
+		ETO = eTO;
+	}
 }

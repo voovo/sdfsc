@@ -15,15 +15,6 @@ import java.util.List;
 @Repository
 public interface PortDao {
     
-    @Select("select ARCID,WKTRC,ADEP,ADES,ATD,EOBT,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and ATD is not null and ATD >#{startTime, jdbcType=VARCHAR} order by ATD asc")
-    List<LeavePort> getHaveFlyingLeavePortFromJinan(@Param("startTime") String startTime);
-    
-    @Select("select ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and SECTOR like 'AP%' order by ETA asc")
-    List<LeavePort> getNowLeavePortFromJinan();
-    
-    @Select("select ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADES='ZSJN' and ATA is not null and ATA >#{startTime, jdbcType=VARCHAR} order by ATA asc")
-    List<EnterPort> getHaveArrivedEnterPortFromJinan(@Param("startTime") String startTime);
-
     @Select("SELECT FLIGHTID,RCVTIME FROM trackhis WHERE HIGH<=8000 AND LONGI >='115.24' AND LONGI<'119.32' AND LAT >='34.31' AND LAT < '38.06' AND RCVTIME >= #{startTime, jdbcType=TIMESTAMP} AND FLIGHTID IS NOT NULL AND FLIGHTID != ''")
     List<Trackhis> getNowAndHistoryFlightId(@Param("startTime") Date startTime);
     
@@ -68,15 +59,23 @@ public interface PortDao {
      * ************************************************************************  2017-05-16
      * 
      */
+    @Select("select ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADES='ZSJN' and ATA is not null and ATA >#{startTime, jdbcType=VARCHAR} and SECTOR not like 'AP%' order by ATA asc")
+    List<EnterPort> getHaveArrivedEnterPortFromJinan(@Param("startTime") String startTime);
+    
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADES='ZSJN' and ETA >=#{startTime,jdbcType=VARCHAR} and ETA <=#{endTime,jdbcType=VARCHAR} order by ETA asc")
     List<EnterPort> getEnterJinJinFilghtForJinan(@Param("startTime") String startTime, @Param("endTime") String endTime);
     
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADES='ZSJN' AND COUPLED='Y' and LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and SECTOR like 'AP%' order by ETA asc")
     List<EnterPort> getNowEnterPortFromJinan();
     
-    @Select("select FDRID,PTID,ETO from fdrfix where FDRID = #{ifpld,jdbcType=VARCHAR} AND PTID in ('TNA','BOSOV','P291','GULEK','P353','P200','ABTUB','PANKI') ORDER BY ETO DESC")
+    @Select("select FDRID,PTID,ETO from fdrfix where FDRID = #{ifpld,jdbcType=VARCHAR} AND PTID in ('TNA','BOSOV','P291','GULEK','P353','P292','ABTUB','PANKI') ORDER BY ETO DESC")
     List<EnterTimeVo> getJinJinTimeForJinan(@Param("ifpld") String ifpld);
 
+    @Select("select ARCID,WKTRC,ADEP,ADES,ATD,EOBT,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and ATD is not null and ATD >#{startTime, jdbcType=VARCHAR} and SECTOR not like 'AP%' order by ATD asc")
+    List<LeavePort> getHaveFlyingLeavePortFromJinan(@Param("startTime") String startTime);
+
+    @Select("select ARCID,WKTRC,ADEP,ADES,ETA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and SECTOR like 'AP%' order by ETA asc")
+    List<LeavePort> getNowLeavePortFromJinan();
     
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ATD,EOBT,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and EOBT is not null and EOBT >=#{startTime,jdbcType=VARCHAR} and EOBT <=#{endTime,jdbcType=VARCHAR} order by EOBT asc")
     List<LeavePort> getToFlyLeavePortFromJinan(@Param("startTime") String startTime, @Param("endTime") String endTime);
