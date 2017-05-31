@@ -152,10 +152,10 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.ARCREG}"></td>
 								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
-								<td th:text="${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')}"></td>
-								<td th:text="${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')}"></td>
-								<td th:text="${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')}"></td>
-								<td th:text="${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')}"></td>
+								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -197,7 +197,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 							<thead>
 							<tr>
 								<th>航班号</th>
-								<th>机型</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
 								<th>注册号</th>
@@ -206,8 +205,9 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<th>预起时间</th>
 								<th>实际起飞时间</th>
 								<th>预落时间</th>
-								<th>TNA</th>
-								<th>过点时间</th>
+								<th>实际降落时间</th>
+								<th>过点时间1</th>
+								<th>过点时间2</th>
 								<th id="sortTime3">剩余时间</th>
 							</tr>
 							</thead>
@@ -216,7 +216,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
 									th:name="${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
-								<td th:text="${port.WKTRC}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.ARCREG}"></td>
@@ -224,16 +223,16 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="出港"></td>
+								<td></td>
 								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="出港"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							<tr th:each="port : ${enterPorts}"
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
 									th:name="${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
-								<td th:text="${port.WKTRC}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.ARCREG}"></td>
@@ -242,6 +241,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td>进港</td>
 								<td></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
