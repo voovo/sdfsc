@@ -38,8 +38,8 @@ public class LeavePort {
     
     String direction;
 
-    Date TNA;
-    Date ETO;
+    Date TNA;	// 从济南遥墙机场起飞时间
+    Date ETO;	// 过 进近区域7点中的任意一个点的时间。（飞机不会绕着进近区域边缘转圈）
 
     public String getIFPLID() {
 		return IFPLID;

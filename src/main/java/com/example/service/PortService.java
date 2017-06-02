@@ -30,6 +30,16 @@ import java.util.Set;
  */
 @Service
 public class PortService {
+	/*
+	 ETA	预计降落时间
+	 ATA	实际降落时间
+	 
+	 TNA	遥墙机场代号
+	 ETO	预计到达某点时间
+	 
+	 EOBT	预计离开时间
+	 ATD	实际离开时间
+	 */
 	
 	static Logger logger = LoggerFactory.getLogger(PortController.class);
     
@@ -74,6 +84,9 @@ public class PortService {
         
         List<LeavePort> jinjinList = new ArrayList<>();
         for (LeavePort ep : toFlyLeavePortList) {
+        	if (ep.getSECTOR().startsWith("AP")) {
+        		continue;
+        	}
         	List<EnterTimeVo> leaveTimeList = portDao.getJinJinTimeForJinan(ep.getIFPLID());
         	if (null == leaveTimeList || leaveTimeList.size() <= 0) {
         		continue;
@@ -194,6 +207,9 @@ public class PortService {
         logger.debug("未来三小时进近入港航班:{}", gson.toJson(toArriveEnterPortList));
         List<EnterPort> jinjinList = new ArrayList<>();
         for (EnterPort ep : toArriveEnterPortList) {
+        	if (ep.getSECTOR().startsWith("AP")) {
+        		continue;
+        	}
         	List<EnterTimeVo> enterTimeList = portDao.getJinJinTimeForJinan(ep.getIFPLID());
         	if (null == enterTimeList || enterTimeList.size() <= 0) {
         		continue;

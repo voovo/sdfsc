@@ -20,6 +20,8 @@ public class EnterPort {
     String ADES;
     //预落时间
     Date ETA;
+    //实际降落时间
+    Date ATA;
     //注册号
     String ARCREG;
     //二次代码
@@ -33,10 +35,11 @@ public class EnterPort {
     int interval;
     //分钟段
     int minutes;
+    
     String direction;
     
-    Date TNA;
-    Date ETO;
+    Date TNA;	// 到济南时间
+    Date ETO;	// 过 进近区域7点中的任意一个点的时间。（飞机不会绕着进近区域边缘转圈）
     
     public int getMinutes() {
         return minutes;
@@ -103,7 +106,15 @@ public class EnterPort {
         this.ETA = eta;
     }
 
-    public String getARCREG() {
+    public Date getATA() {
+		return ATA;
+	}
+
+	public void setATA(Date aTA) {
+		ATA = aTA;
+	}
+
+	public String getARCREG() {
         return ARCREG;
     }
 
