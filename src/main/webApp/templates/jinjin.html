@@ -3,9 +3,16 @@
 <head th:include="common/header::common_header"></head>
 <script language="JavaScript"> 
 function myrefresh(){ 
-window.location.reload(); 
+	var date = new Date();
+	if (date.getMinutes() % 5 == 0) {
+		console.log('Flush');
+		window.location.reload(); 
+	} else {
+		console.log('AAAA');
+		setTimeout('myrefresh()',60000); //指定5min刷新一次
+	}
 } 
-setTimeout('myrefresh()',60000); //指定5秒刷新一次 
+setTimeout('myrefresh()',60000); //指定5min刷新一次 
 </script> 
 <body>
 <div class="container-fluid">
@@ -57,14 +64,12 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 							</div>
 						</div>
 
-						<table id="myLeaveTable" class="table table-striped tablesorter tablesorter-blue">
+						<table id="myLeaveTable" class="table table-striped tablesorter tablesorter-blue" size=50%>
 							<thead>
 							<tr>
 								<th>航班号</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
-								<th>注册号</th>
-								<th>二次代码</th>
 								<th>状态</th>
 								<th>预起时间</th>
 								<th>实际起飞时间</th>
@@ -79,8 +84,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
-								<td th:text="${port.ARCREG}"></td>
-								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
@@ -126,14 +129,12 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 							</div>
 						</div>
 
-						<table id="myEnterTable" class="table table-striped tablesorter tablesorter-blue">
+						<table id="myEnterTable" class="table table-striped tablesorter tablesorter-blue" width="50%">
 							<thead>
 							<tr>
 								<th>航班号</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
-								<th>注册号</th>
-								<th>二次代码</th>
 								<th>状态</th>
 								<th>预落时间</th>
 								<th>实际降落时间</th>
@@ -149,8 +150,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
-								<td th:text="${port.ARCREG}"></td>
-								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
@@ -164,7 +163,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				</div>
 			</div>
 			<div id="allTable" class="services active" style="display: none">
-				<h3 style="text-align: left;margin-top: 15px">进港出港表(总数：<span id="allPortsSize" th:text="${allPorts.size()}"></span>个）</h3>
+				<h3 style="text-align: left;margin-top: 15px">进港出港表(总数：<span id="allPortsSize" th:text="${leavePorts.size() + enterPorts.size()}"></span>个）</h3>
 				<!--service-page-->
 				<div class="servcs-page  text-center">
 					<div class="table-chugang">
@@ -199,8 +198,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<th>航班号</th>
 								<th>起飞机场</th>
 								<th>目的机场</th>
-								<th>注册号</th>
-								<th>二次代码</th>
 								<th>状态</th>
 								<th>预起时间</th>
 								<th>实际起飞时间</th>
@@ -218,8 +215,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
-								<td th:text="${port.ARCREG}"></td>
-								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
@@ -235,8 +230,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
-								<td th:text="${port.ARCREG}"></td>
-								<td th:text="${port.SsrCode}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td>进港</td>
 								<td></td>
@@ -265,6 +258,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 	$(function () {
 		$("#myLeaveTable").tablesorter();
 		$("#myEnterTable").tablesorter();
+		$("#myAllTable").tablesorter();
 	});
 </script>
 <script>
@@ -329,7 +323,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 	function processList(leaveCountLists, leaveNumberLists) {
 		var newleaveCountLists = clone(leaveCountLists);
 		var newleaveNumberLists = clone(leaveNumberLists);
-		// console.log("CountList.length:" + leaveCountLists.length);
 		for (var i = 1; i < leaveCountLists.length; i++) {
 			var count = 0;
 			var number = "";
@@ -514,16 +507,12 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 	var timeStep = 5;
 	nowDate = new Date(nowDate);
 	nowDate.setHours(nowDate.getHours() - 1);
-	var nowMinutes = nowDate.getMinutes();
-	var showMinutes = Math.round(nowMinutes/5) * 5;
-	var minutesSub = nowMinutes - showMinutes;
-	nowDate.setMinutes(showMinutes);
 	function initLeave() {
 		leaveNumbers = [];
 		leaveCounts = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < leavePorts.length; i++) {
-			var n = parseInt((leavePorts[i].minutes+60 + minutesSub) / timeStep) ;
+			var n = parseInt((leavePorts[i].minutes+60) / timeStep) ;
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -628,7 +617,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 					data: leaveCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub)/ timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60/ timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -636,7 +625,11 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 			formatter: function (params, ticket, callback) {
 				if (params[0].name) {
 					if (params[0].data != 0) {
-						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						if (params[0].dataIndex == (60 / timeStep)) {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号<font color='red'>" + leaveNumbers[params[0].dataIndex] + "</font>";
+						} else {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						}
 					}
 					return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
 					
@@ -660,9 +653,8 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 		enterCounts = [];
 		enterNumbers = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
-		// console.log("TimeSelect:" + timeSelect +"\nTimeStep:" + timeStep +"\nlen:" + len);
 		for (var i = 0; i < enterPorts.length; i++) {
-			var n = parseInt((enterPorts[i].minutes+60 + minutesSub)/ timeStep);
+			var n = parseInt((enterPorts[i].minutes+60)/ timeStep);
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -685,9 +677,6 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				enterNumbers[i] = "";
 			}
 		}
-		for(var i=0;i<enterNumbers.length;i++){
-			console.log(i + ":" + enterNumbers[i]);
-		}
 		enterCounts.length = len;
 		enterNumbers.length = len;
 		//processList(enterCounts, enterNumbers);
@@ -705,6 +694,9 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 			if (m >= 60) {
 				h += parseInt(m / 60);
 				m = m % 60;
+			}
+			if (m < 10) {
+				m = "0" + m;
 			}
 			
 			enterXData[i] = h % 24 + ":" + m;
@@ -735,6 +727,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 					type: 'category',
 					boundaryGap: false,
 					data: enterXData,
+					interval:1,
 					axisLabel: {
 						show: true,
 						rotate: 30,
@@ -767,7 +760,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 					data: enterCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -775,7 +768,11 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 			formatter: function (params, ticket, callback) {
 				if (params[0].name) {
 					if (params[0].data != 0) {
-						return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + enterNumbers[params[0].dataIndex];
+						if (params[0].dataIndex == (60 / timeStep)) {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号<font color='red'>" + enterNumbers[params[0].dataIndex] + "</font>";
+						} else {
+							return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + enterNumbers[params[0].dataIndex];
+						}
 					}
 					return params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
 					
@@ -795,7 +792,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 		enterNumbers = [];
 		var len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < enterPorts.length; i++) {
-			var n = parseInt((enterPorts[i].minutes+60 + minutesSub)  / timeStep);
+			var n = parseInt((enterPorts[i].minutes+60)  / timeStep);
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -825,7 +822,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 		leaveCounts = [];
 		len = parseInt(timeSelect / timeStep) + 1;
 		for (var i = 0; i < leavePorts.length; i++) {
-			var n = parseInt((leavePorts[i].minutes+60 + minutesSub) / timeStep);
+			var n = parseInt((leavePorts[i].minutes+60) / timeStep);
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
@@ -873,11 +870,14 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				h += parseInt(m / 60);
 				m = m % 60;
 			}
+			if (m < 10) {
+				m = "0" + m;
+			}
 			XData[i] = h % 24 + ":" + m;
 		}
 		// 基于准备好的dom，初始化echarts实例
 		var countAll = addData(enterCounts, leaveCounts);
-		var enterChart = echarts.init(document.getElementById('allChart'));
+		var allChart = echarts.init(document.getElementById('allChart'));
 		option = {
 			tooltip : {
 				trigger: 'axis'
@@ -947,7 +947,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 					data: countAll,
 					markLine: {
 						data: [
-							[{name: '当前时间', xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 0}, {xAxis: parseInt((60+ minutesSub) / timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -956,7 +956,11 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				var result = "";
 				if (params[0].name) {
 					if (params[0].data != 0) {
-						result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						if (params[0].dataIndex == (60 / timeStep)) {
+							result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号<font color='red'>" + leaveNumbers[params[0].dataIndex] + "</font>";
+						} else {
+							result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data + "<br>航班号" + leaveNumbers[params[0].dataIndex];
+						}
 					}
 					else {
 						result += params[0].name + "后<br>" + params[0].seriesName + ":" + params[0].data;
@@ -968,7 +972,11 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				result += "<br>";
 				if (params[1].name) {
 					if (params[1].data != 0) {
-						result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data + "<br>航班号" + enterNumbers[params[1].dataIndex];
+						if (params[1].dataIndex == (60 / timeStep)) {
+							result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data + "<br>航班号<font color='red'>" + enterNumbers[params[1].dataIndex] + "</font>";
+						} else {
+							result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data + "<br>航班号" + enterNumbers[params[1].dataIndex];
+						}
 					}
 					else {
 						result += params[1].name + "后<br>" + params[1].seriesName + ":" + params[1].data;
@@ -981,7 +989,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 				return result;
 			}
 		};
-		enterChart.setOption(option);
+		allChart.setOption(option);
 	}
 </script>
 <script>
@@ -1029,6 +1037,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 		timeChange();
 	});
 	$('#5min').change();
+	//$('#1min').change();
 </script>
 
 <script>
@@ -1036,7 +1045,7 @@ setTimeout('myrefresh()',60000); //指定5秒刷新一次
 	var leaveTable = $("#leaveTable");
 	var allTable = $("#allTable");
 	enterTable.removeClass("active");
-	allTable.removeClass("active");
+	leaveTable.removeClass("active");
 	
 	$('#leaveButton').click(function () {
 		leaveTable.fadeIn(500);

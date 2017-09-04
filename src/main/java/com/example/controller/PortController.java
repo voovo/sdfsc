@@ -47,6 +47,7 @@ public class PortController {
             return "/login";
         }
         Date now = PortService.getNOW();
+        
         //对应到templates文件夹下面的index
         //出港
         List<LeavePort> leavePorts = portService.getLeavePortTable(now);
@@ -57,8 +58,8 @@ public class PortController {
         model.addAttribute("enterPorts", enterPorts);
         
         
-        List<AllPort> allPorts = portService.getAllPortTable(now);
-        model.addAttribute("allPorts", allPorts);
+//        List<AllPort> allPorts = portService.getAllPortTable(now);
+//        model.addAttribute("allPorts", allPorts);
         
         model.addAttribute("nowTime", PortService.DATE_FORMAT.format(now));
         model.addAttribute("JNowTime", now);

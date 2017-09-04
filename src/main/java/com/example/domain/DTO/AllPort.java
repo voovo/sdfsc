@@ -26,6 +26,8 @@ public class AllPort {
     String ARCREG;
     //二次代码
     String SsrCode;
+
+    String SECTOR;
     //状态
     String STATUS;
     //分钟段
@@ -76,8 +78,6 @@ public class AllPort {
         return ETA;
     }
 
-
-
     public String getARCREG() {
         return ARCREG;
     }
@@ -94,7 +94,15 @@ public class AllPort {
         SsrCode = ssrCode;
     }
 
-    public String getSTATUS() {
+    public String getSECTOR() {
+		return SECTOR;
+	}
+
+	public void setSECTOR(String sECTOR) {
+		SECTOR = sECTOR;
+	}
+
+	public String getSTATUS() {
         return STATUS;
     }
 

@@ -28,6 +28,7 @@ public class DataBaseConfig {
         
         dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/sdfsc");
         dataSource.setUsername("root");
+//        dataSource.setPassword("rootjzkc");
         dataSource.setPassword("root");
         return dataSource;
     }

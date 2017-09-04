@@ -53,12 +53,21 @@ public class PortService {
     private PortDao portDao;
     
     public static Date getNOW(){
-    	Date now = new Date();
-    	Calendar c = Calendar.getInstance();
-        c.setTime(now);
-        c.set(Calendar.SECOND, 0);
-        c.add(Calendar.HOUR_OF_DAY, -8);
-        return c.getTime();
+//    	Date now = new Date();
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			Date now = sdf.parse("2017-09-01 08:45:00");
+			Calendar c = Calendar.getInstance();
+	        c.setTime(now);
+	        c.set(Calendar.SECOND, 0);
+	        c.add(Calendar.HOUR_OF_DAY, -8);
+	        return c.getTime();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    	
 //    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;  
 //    	Date now = null;
 //		try {
@@ -78,7 +87,7 @@ public class PortService {
         logger.debug("haveFlyingLeavePortList:{}", gson.toJson(haveFlyingLeavePortList));
         
         String startTime = DATE_FORMAT_2.format(PortService.getNOW());
-        String endTime = DATE_FORMAT_2.format(DateUtils.addDays(PortService.getNOW(), 3));
+        String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
         List<LeavePort> toFlyLeavePortList = portDao.getToFlyLeavePortFromJinan(startTime, endTime);
         logger.debug("toFlyLeavePortList:{}", gson.toJson(toFlyLeavePortList));
         
@@ -99,6 +108,10 @@ public class PortService {
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
         			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000);
+        			// 舍2取3
+        			if (intervalMinutue <= 2) {
+        				continue;
+        			}
         			ep.setATD(tnaTime);
         			ep.setTNA(tnaTime);
         			ep.setETO(outJinJinTime);
@@ -131,6 +144,10 @@ public class PortService {
     			Date outJinJinTime = nowTime;
     			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
+    			// 舍2取3
+    			if (intervalMinutue <= 2) {
+    				continue;
+    			}
     			port.setATD(nowTime);
     			port.setTNA(tnaTime);
     			port.setETO(outJinJinTime);
@@ -146,9 +163,6 @@ public class PortService {
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-//        if (null != nowjinjinList && nowjinjinList.size() > 0) {
-//            allList.addAll(nowjinjinList);
-//        }
         
         for (Iterator<LeavePort> it = allList.iterator(); it.hasNext(); ) {
             LeavePort port = it.next();
@@ -163,16 +177,19 @@ public class PortService {
                 if (minute > 180 || minute < -60) {
                     it.remove();
                 } else {
-                    port.setMinutes(minute);
-                    logger.debug("LeavePort:{}", gson.toJson(port));
+                	if (!port.getSECTOR().startsWith("AP") && minute > -3 && minute < 3) {
+                		it.remove();
+                	} else {
+                		port.setMinutes(minute);
+                	}
                 }
             } else {
                 it.remove();
             }
 
         }
-        if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
-            for (LeavePort port : nowLeavePortList) {
+        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+            for (LeavePort port : nowjinjinList) {
                 port.setMinutes(0);
                 allList.add(port);
             }
@@ -201,7 +218,7 @@ public class PortService {
         List<EnterPort> nowEnterPortList = portDao.getNowEnterPortFromJinan();
         logger.debug("nowEnterPortList:{}", gson.toJson(nowEnterPortList));
         
-        String startTime = DATE_FORMAT_2.format(PortService.getNOW());
+        String startTime = DATE_FORMAT_2.format(DateUtils.addMinutes(PortService.getNOW(), 1));
         String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
         List<EnterPort> toArriveEnterPortList = portDao.getEnterJinJinFilghtForJinan(startTime, endTime);
         logger.debug("未来三小时进近入港航班:{}", gson.toJson(toArriveEnterPortList));
@@ -222,6 +239,10 @@ public class PortService {
         			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
         			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000) ;
+        			// 舍2取3
+        			if (intervalMinutue <= 2) {
+        				continue;
+        			}
         			ep.setInterval(intervalMinutue + 5);
         			ep.setETA(et.getETO());
         			ep.setTNA(tnaTime);
@@ -249,6 +270,10 @@ public class PortService {
     			Date outJinJinTime = nowTime;
     			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
+    			// 舍2取3
+    			if (intervalMinutue <= 2) {
+    				continue;
+    			}
     			port.setETA(nowTime);
     			port.setInterval(intervalMinutue + 5);
     			
@@ -276,15 +301,19 @@ public class PortService {
                 if (minute > 180 || minute < -60) {
                     it.remove();
                 } else {
-                    port.setMinutes(minute);
+                	if (!port.getSECTOR().startsWith("AP") && minute > -3 && minute < 3) {
+                		it.remove();
+                	} else {
+                		port.setMinutes(minute);
+                	}
                 }
             } else {
                 it.remove();
             }
         }
         
-        if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
-            for (EnterPort port : nowEnterPortList) {
+        if (null != nowjinjinList && nowjinjinList.size() > 0) {
+            for (EnterPort port : nowjinjinList) {
                 port.setMinutes(0);
                 allList.add(port);
             }
@@ -316,7 +345,11 @@ public class PortService {
                 if (minute > 180 || minute < -60) {
                     it.remove();
                 } else {
-                    port.setMinutes(minute);
+                	if (!port.getSECTOR().startsWith("AP") && minute > -3 && minute < 3) {
+                		it.remove();
+                	} else {
+                		port.setMinutes(minute);
+                	}
                 }
             } else {
                 it.remove();

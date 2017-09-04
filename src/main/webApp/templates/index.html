@@ -24,7 +24,13 @@
 				<form action="/login/" id="login-form" class="contact-form" method="POST">
 					<div class="form-group">
 						<label for="username">用户名</label>
-						<input type="text" id="username" name="username" placeholder="输入用户名">
+						<!-- <input type="text" id="username" name="username" placeholder="输入用户名"> -->
+							<select name="username" id="username" style="width:590px;height=100px;">
+								<option value="jinjin">进近</option>
+								<option value="quyu" >区域</option>
+								<option value="admin" selected="selected">管理员</option>
+							</select>
+						</input>
 					</div>
 					<div class="form-group">
 						<label for="password">密码</label>
