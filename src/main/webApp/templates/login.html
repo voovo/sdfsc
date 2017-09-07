@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:include="common/header :: common_header"></head>
-
+<head th:include="common/header :: common_header">
+<meta charset="UTF-8">
+</head>
 <body>
 <div class="container-fluid">
 	<div class="row">
@@ -9,81 +10,52 @@
 		<div class="col-sm-3 col-md-2 sidebar" th:include="common/sidebar :: sidebar">
 		</div>
 		<!--//side-bar-->
+
 		<div class="col-sm-9  col-md-10 col-md-offset-2 main about-main">
-			<div class="services form" style="display: block">
+			<div>
+				<h3>欢迎使用山东空管流量预测系统</h3>
+				<!--<h3>如果你未登陆请点击此处 <a class="hvr-bounce-to-right" id="login" href="javascript:;">登陆</a> </h3>-->
+				<div style="margin: 35px">
+					<h3 id="message" th:if="${param.message}" th:text="${param.message[0]}"></h3>
+					<h3 id="message" th:if="${message}" th:text="${message}"></h3>
+				</div>
+			</div>
+			<br>
+
+			<div id="form" class="services form" style="display: block" >
 				<form action="/login/" id="login-form" class="contact-form" method="POST">
 					<div class="form-group">
 						<label for="username">用户名</label>
-						<input type="text" id="username" name="username" placeholder="输入用户名">
+						<select id="username" name="username" 
+							style="display: inline-block; background: none; border: 1px solid #A3A1A1; width: 80%;margin: 0 0 1.5em 0;  outline: none;font-size: 14px;color: #747577;padding: 10px 15px;">
+  							<option value="jinjin">进近</option>
+  							<!--
+  							<option value="qudiao">区调</option>
+  							<option value="admin">管理员</option>
+  							-->
+						</select>
+						
 					</div>
 					<div class="form-group">
 						<label for="password">密码</label>
-						<input type="password" id="password" name="password" placeholder="输入密码">
+						<input type="password" id="password" name="password" value="jinjin" placeholder="输入密码">
 					</div>
 					<div class="form-group">
 						<input type="submit" class="button" value="登陆">
 					</div>
-					<div class="form-group">
-						<h2 id="message" th:if="${param.message}" th:text="${param.message[0]}"></h2>
-					</div>
+
 				</form>
 			</div>
 		</div>
 		<div class="footer">
+
 		</div>
 	</div>
 </div>
 <div class="clearfix"></div>
-<script>
-	$(document).ready(function () {
-		$('#login-form')
-				.bootstrapValidator({
-					message: '这个值无效',
-					//live: 'submitted',
-					feedbackIcons: {
-						valid: 'glyphicon glyphicon-ok',
-						invalid: 'glyphicon glyphicon-remove',
-						validating: 'glyphicon glyphicon-refresh'
-					},
-					fields: {
-						username: {
-							message: '无效的用户名',
-							validators: {
-								notEmpty: {
-									message: '用户名不能为空'
-								},
-								stringLength: {
-									min: 5,
-									max: 30,
-									message: '用户名长度大于5小于30'
-								},
-								/*remote: {
-								 url: 'remote.php',
-								 message: 'The username is not available'
-								 },*/
-								regexp: {
-									regexp: /^[a-zA-Z0-9_\.]+$/,
-									message: '用户名只能为英文字符数组或者下划线'
-								}
-							}
-						},
-						password: {
-							validators: {
-								notEmpty: {
-									message: '密码不能为空'
-								},
-								stringLength: {
-									min: 5,
-									max: 30,
-									message: '密码长度大于5小于30'
-								}
-							}
-						}
-					}
-				})
-				.on('success.form.bv', function (e) {
-
-				});
+<script >
+	$('#login').click(function(){
+		$('#form').toggle(300);
 	});
 </script>
 </body>

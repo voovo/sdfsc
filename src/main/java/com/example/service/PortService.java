@@ -53,30 +53,12 @@ public class PortService {
     private PortDao portDao;
     
     public static Date getNOW(){
-//    	Date now = new Date();
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		try {
-			Date now = sdf.parse("2017-09-01 08:45:00");
-			Calendar c = Calendar.getInstance();
-	        c.setTime(now);
-	        c.set(Calendar.SECOND, 0);
-	        c.add(Calendar.HOUR_OF_DAY, -8);
-	        return c.getTime();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-    	
-//    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;  
-//    	Date now = null;
-//		try {
-//			now = format.parse("2017-05-16 13:30:00");
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	return now;
+    	Date now = new Date();
+		Calendar c = Calendar.getInstance();
+        c.setTime(now);
+        c.set(Calendar.SECOND, 0);
+        c.add(Calendar.HOUR_OF_DAY, -8);
+        return c.getTime();
     }
     
     //出港航班
