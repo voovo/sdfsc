@@ -68,7 +68,7 @@ public interface PortDao {
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ETA,ATA,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADES='ZSJN' AND COUPLED='Y' and LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and SECTOR like 'AP%' order by ETA asc")
     List<EnterPort> getNowEnterPortFromJinan();
     
-    @Select("select FDRID,PTID,ETO from fdrfix where FDRID = #{ifpld,jdbcType=VARCHAR} AND PTID in ('TNA','BOSOV','P291','GULEK','P353','P292','ABTUB','PANKI') ORDER BY ETO DESC")
+    @Select("select FDRID,PTID,ETO from fdrfix where FDRID = #{ifpld,jdbcType=VARCHAR} AND PTID in ('TNA','BASOV','P291','GULEK','P353','P200','ABTUB', 'P292','PANKI') ORDER BY ETO DESC")
     List<EnterTimeVo> getJinJinTimeForJinan(@Param("ifpld") String ifpld);
 
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ATD,EOBT,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and ATD is not null and ATD >#{startTime, jdbcType=VARCHAR} and SECTOR not like 'AP%' order by ATD asc")

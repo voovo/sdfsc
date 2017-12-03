@@ -1,6 +1,5 @@
 package com.example.service;
 
-import com.example.controller.PortController;
 import com.example.dao.PortDao;
 import com.example.domain.DTO.*;
 import com.google.gson.Gson;
@@ -41,7 +40,7 @@ public class PortService {
 	 ATD	实际离开时间
 	 */
 	
-	static Logger logger = LoggerFactory.getLogger(PortController.class);
+	static Logger logger = LoggerFactory.getLogger(PortService.class);
     
     static Gson gson = new Gson();
     
@@ -66,12 +65,11 @@ public class PortService {
         
         String haveFlyingStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
         List<LeavePort> haveFlyingLeavePortList = portDao.getHaveFlyingLeavePortFromJinan(haveFlyingStartTime);
-        logger.debug("haveFlyingLeavePortList:{}", gson.toJson(haveFlyingLeavePortList));
+//        logger.debug("haveFlyingLeavePortList:{}", gson.toJson(haveFlyingLeavePortList));
         
         String startTime = DATE_FORMAT_2.format(PortService.getNOW());
         String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
         List<LeavePort> toFlyLeavePortList = portDao.getToFlyLeavePortFromJinan(startTime, endTime);
-        logger.debug("toFlyLeavePortList:{}", gson.toJson(toFlyLeavePortList));
         
         List<LeavePort> jinjinList = new ArrayList<>();
         for (LeavePort ep : toFlyLeavePortList) {
@@ -79,34 +77,32 @@ public class PortService {
         		continue;
         	}
         	List<EnterTimeVo> leaveTimeList = portDao.getJinJinTimeForJinan(ep.getIFPLID());
-        	if (null == leaveTimeList || leaveTimeList.size() <= 0) {
+        	if (null == leaveTimeList || leaveTimeList.size() != 2) {
         		continue;
         	}
-        	EnterTimeVo tna = leaveTimeList.get(leaveTimeList.size() - 1);
-        	if (leaveTimeList.size() > 1) {
-        		for (int i=0; i<leaveTimeList.size() - 1; i++) {
-        			EnterTimeVo et = leaveTimeList.get(i);
-        			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
-        			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
-        			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
-        			int intervalMinutue = (int) (intervalMis / 60000);
-        			// 舍2取3
-        			if (intervalMinutue <= 2) {
-        				continue;
-        			}
-        			ep.setATD(tnaTime);
-        			ep.setTNA(tnaTime);
-        			ep.setETO(outJinJinTime);
-        			ep.setInterval(intervalMinutue + 5);
-        			
-        			jinjinList.add(ep);
-        		}
+        	EnterTimeVo tna = leaveTimeList.get(1);
+        	EnterTimeVo eto = leaveTimeList.get(0);
+			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
+			Date outJinJinTime = DATE_FORMAT_2.parse(eto.getETO());
+			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
+			int intervalMinutue = (int) (intervalMis / 60000);
+			ep.setATD(tnaTime);
+			ep.setTNA(tnaTime);
+			ep.setETO(outJinJinTime);
+			ep.setInterval(intervalMinutue);
+			if (logger.isDebugEnabled()) {
+        		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
         	}
+			jinjinList.add(ep);
         }
         
         
         List<LeavePort> nowLeavePortList = portDao.getNowLeavePortFromJinan();
-        logger.debug("nowLeavePortList:{}", gson.toJson(nowLeavePortList));
+        if (logger.isDebugEnabled()) {
+        	for (LeavePort lp : nowLeavePortList) {
+        		logger.debug("nowLeavePortList:{}", lp.getARCID());
+        	}
+        }
         
         List<LeavePort> nowjinjinList = new ArrayList<>();
         if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
@@ -116,24 +112,25 @@ public class PortService {
             		continue;
             	}
             	EnterTimeVo tna = null;
+            	EnterTimeVo eto = null;
             	for (EnterTimeVo et : enterTimeList) {
             		if (et.getPTID().equals("TNA")) {
             			tna = et;
-            			break;
+            		} else {
+            			eto = et;
             		}
             	}
             	Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
     			Date outJinJinTime = nowTime;
-    			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
+    			long intervalMis = DATE_FORMAT_2.parse(eto.getETO()).getTime() - nowTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
-    			// 舍2取3
-    			if (intervalMinutue <= 2) {
-    				continue;
-    			}
     			port.setATD(nowTime);
     			port.setTNA(tnaTime);
     			port.setETO(outJinJinTime);
-    			port.setInterval(intervalMinutue + 5);
+    			port.setInterval(intervalMinutue);
+    			if (logger.isDebugEnabled()) {
+            		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+            	}
     			nowjinjinList.add(port);
             }
         }
@@ -184,7 +181,6 @@ public class PortService {
         		doneSet.add(port.getARCID() + ":" + port.getATD());
         	}
         }
-        logger.info("######LeavePortList######\n{}", gson.toJson(retList));
         return retList;
     }
 
@@ -195,43 +191,37 @@ public class PortService {
         }
         String haveArrivedStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
         List<EnterPort> haveArrivedEnterPortList = portDao.getHaveArrivedEnterPortFromJinan(haveArrivedStartTime);
-        logger.debug("过去一小时进近入港数据:{}", gson.toJson(haveArrivedEnterPortList));
+//        logger.debug("过去一小时进近入港数据:{}", gson.toJson(haveArrivedEnterPortList));
         
         List<EnterPort> nowEnterPortList = portDao.getNowEnterPortFromJinan();
-        logger.debug("nowEnterPortList:{}", gson.toJson(nowEnterPortList));
         
         String startTime = DATE_FORMAT_2.format(DateUtils.addMinutes(PortService.getNOW(), 1));
         String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
         List<EnterPort> toArriveEnterPortList = portDao.getEnterJinJinFilghtForJinan(startTime, endTime);
-        logger.debug("未来三小时进近入港航班:{}", gson.toJson(toArriveEnterPortList));
+//        logger.debug("未来三小时进近入港航班:{}", gson.toJson(toArriveEnterPortList));
         List<EnterPort> jinjinList = new ArrayList<>();
         for (EnterPort ep : toArriveEnterPortList) {
         	if (ep.getSECTOR().startsWith("AP")) {
         		continue;
         	}
         	List<EnterTimeVo> enterTimeList = portDao.getJinJinTimeForJinan(ep.getIFPLID());
-        	if (null == enterTimeList || enterTimeList.size() <= 0) {
+        	if (null == enterTimeList || enterTimeList.size() != 2) {
         		continue;
         	}
         	EnterTimeVo tna = enterTimeList.get(0);
-        	if (enterTimeList.size() > 1) {
-        		for (int i=1; i<enterTimeList.size(); i++) {
-        			EnterTimeVo et = enterTimeList.get(i);
-        			Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
-        			Date outJinJinTime = DATE_FORMAT_2.parse(et.getETO());
-        			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
-        			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			// 舍2取3
-        			if (intervalMinutue <= 2) {
-        				continue;
-        			}
-        			ep.setInterval(intervalMinutue + 5);
-        			ep.setETA(et.getETO());
-        			ep.setTNA(tnaTime);
-        			ep.setETO(outJinJinTime);
-        			jinjinList.add(ep);
-        		}
+        	EnterTimeVo eto = enterTimeList.get(1);
+        	Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
+        	Date etoTime = DATE_FORMAT_2.parse(eto.getETO());
+        	long intervalMis = tnaTime.getTime() - etoTime.getTime();
+        	int intervalMinutue = (int) (intervalMis / 60000) ;
+        	ep.setInterval(intervalMinutue);
+        	ep.setETA(ep.getETA());
+        	ep.setTNA(tnaTime);
+        	ep.setETO(etoTime);
+        	if (logger.isDebugEnabled()) {
+        		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
         	}
+        	jinjinList.add(ep);
         }
         
         List<EnterPort> nowjinjinList = new ArrayList<>();
@@ -242,25 +232,25 @@ public class PortService {
             		continue;
             	}
             	EnterTimeVo tna = null;
+            	EnterTimeVo eto = null;
             	for (EnterTimeVo et : enterTimeList) {
             		if (et.getPTID().equals("TNA")) {
             			tna = et;
-            			break;
+            		} else {
+            			eto = et;
             		}
             	}
             	Date tnaTime = DATE_FORMAT_2.parse(tna.getETO()); 
     			Date outJinJinTime = nowTime;
-    			long intervalMis = tnaTime.getTime() - outJinJinTime.getTime();
+    			long intervalMis = tnaTime.getTime() - nowTime.getTime();
     			int intervalMinutue = (int) (intervalMis / 60000) ;
-    			// 舍2取3
-    			if (intervalMinutue <= 2) {
-    				continue;
-    			}
     			port.setETA(nowTime);
-    			port.setInterval(intervalMinutue + 5);
-    			
+    			port.setInterval(intervalMinutue);
     			port.setTNA(tnaTime);
     			port.setETO(outJinJinTime);
+    			if (logger.isDebugEnabled()) {
+            		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+            	}
     			nowjinjinList.add(port);
             }
         }
@@ -269,9 +259,6 @@ public class PortService {
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-//        if (null != nowjinjinList && nowjinjinList.size() > 0) {
-//            allList.addAll(nowjinjinList);
-//        }
         
         for (Iterator<EnterPort> it = allList.iterator(); it.hasNext(); ) {
             EnterPort port = it.next();
@@ -308,7 +295,6 @@ public class PortService {
         		doneSet.add(port.getARCID() + ":" + port.getInterval());
         	}
         }
-        logger.info("######EnterPortList######\n{}", gson.toJson(retList));
         return retList;
     }
 

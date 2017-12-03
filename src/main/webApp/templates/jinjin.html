@@ -6,7 +6,7 @@ function myrefresh(){
 	var date = new Date();
 	if (date.getMinutes() % 5 == 0) {
 		console.log('Flush');
-		window.location.reload(); 
+		//window.location.reload(); 
 	} else {
 		console.log('AAAA');
 		setTimeout('myrefresh()',60000); //指定5min刷新一次
@@ -505,6 +505,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 	var leavePorts = /*[[${leavePorts}]]*/;
 	var nowDate = /*[[${JNowTime}]]*/;
 	var timeStep = 5;
+	var extMinute = 0;
 	nowDate = new Date(nowDate);
 	nowDate.setHours(nowDate.getHours() - 1);
 	function initLeave() {
@@ -516,7 +517,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			for (var j=0; j<parseInt(leavePorts[i].interval/ timeStep); j++) {
+			for (var j=0; j<=parseInt((leavePorts[i].interval + extMinute)/ timeStep); j++) {
 				if (leaveCounts[n + j] == undefined) {
 					leaveCounts[n + j] = 0;
 				}
@@ -658,7 +659,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			for (var j=0; j<parseInt(enterPorts[i].interval/ timeStep); j++) {
+			for (var j=0; j<=parseInt((enterPorts[i].interval + extMinute)/ timeStep); j++) {
 				if (enterCounts[n + j] == undefined) {
 					enterCounts[n + j] = 0;
 				}
@@ -796,7 +797,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			if (enterPorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			for (var j=0; j<parseInt(enterPorts[i].interval/ timeStep); j++) {
+			for (var j=0; j<=parseInt((enterPorts[i].interval + extMinute)/ timeStep); j++) {
 				if (enterCounts[n + j] == undefined) {
 					enterCounts[n + j] = 0;
 				}
@@ -826,7 +827,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			if (leavePorts[i].minutes > 0 && n == 12) {
 				n = 13;
 			}
-			for (var j=0; j<parseInt(leavePorts[i].interval/ timeStep); j++) {
+			for (var j=0; j<=parseInt((leavePorts[i].interval + extMinute)/ timeStep); j++) {
 				if (leaveCounts[n + j] == undefined) {
 					leaveCounts[n + j] = 0;
 				}
@@ -1005,6 +1006,9 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 		}
 	}
 	function timeChange() {
+		if (timeStep == 5) {
+			extMinute = 2;
+		}
 		initLeave();
 		initEnter();
 		initAll();
@@ -1036,8 +1040,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 		timeStep = 5;
 		timeChange();
 	});
-	$('#5min').change();
 	//$('#1min').change();
+	$('#5min').change();
 </script>
 
 <script>

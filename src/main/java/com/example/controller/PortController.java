@@ -31,9 +31,9 @@ import java.util.Set;
 @Controller
 public class PortController {
     
-    static Logger logger = LoggerFactory.getLogger(PortController.class);
+//    static Logger logger = LoggerFactory.getLogger(PortController.class);
     
-    static Gson gson = new Gson();
+//    static Gson gson = new Gson();
     
     @Autowired
     private PortService portService;
@@ -54,7 +54,7 @@ public class PortController {
         model.addAttribute("leavePorts", leavePorts);
         //入港
         List<EnterPort> enterPorts = portService.getEnterPortTable(now);
-        logger.debug("EnterPort.size:{}", enterPorts == null ? 0 : enterPorts.size());
+//        logger.debug("EnterPort.size:{}", enterPorts == null ? 0 : enterPorts.size());
         model.addAttribute("enterPorts", enterPorts);
         
         
@@ -85,7 +85,7 @@ public class PortController {
             for (AreaPort port : areaPorts) {
                 arcIdSet.add(port.getARCID());
             }
-            logger.debug("arcIdSet:{}", gson.toJson(arcIdSet));
+//            logger.debug("arcIdSet:{}", gson.toJson(arcIdSet));
             model.addAttribute("totalCnt", arcIdSet.size());
         }
         
