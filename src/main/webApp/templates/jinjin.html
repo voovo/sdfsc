@@ -214,8 +214,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'HH:mm')} : ''"></td>
 								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 8 * 60 *1000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -245,7 +245,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'HH:mm')} : ''"></td>
 								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(new java.util.Date(port.ETO.getTime() + 600000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -1016,7 +1016,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 	}
 	function timeChange() {
 		if (timeStep == 5) {
-			extMinute = 2;
+			//extMinute = 2;
+			extMinute = 8;
 		}
 		initLeave();
 		initEnter();
