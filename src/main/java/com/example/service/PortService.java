@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by SunYi on 2016/2/16/0016.
- */
 @Service
 public class PortService {
 	/*
@@ -86,7 +83,7 @@ public class PortService {
 			Date outJinJinTime = DATE_FORMAT_2.parse(eto.getETO());
 			long intervalMis = outJinJinTime.getTime() - tnaTime.getTime();
 			int intervalMinutue = (int) (intervalMis / 60000);
-			ep.setATD(tnaTime);
+//			ep.setATD(tnaTime);
 			ep.setTNA(tnaTime);
 			ep.setETO(outJinJinTime);
 			ep.setInterval(intervalMinutue);

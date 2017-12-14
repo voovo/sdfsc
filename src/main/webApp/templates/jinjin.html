@@ -153,8 +153,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 8 * 60 *1000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -195,14 +195,14 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 						<table id="myAllTable_enter" class="table table-striped tablesorter tablesorter-blue" style="width:49%;position:relative; float:left;">
 							<thead>
 							<tr>
-								<th>FlightingID</th>
-								<th>DEP</th>
-								<th>DES</th>
+								<th>航班号</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
 								<th>状态</th>
 								<th>预落时间</th>
-								<th>PASS1</th>
-								<th>PASS2</th>
-								<th id="sortTime3">REMAIN_TIME</th>
+								<th>过点时间1</th>
+								<th>过点时间2</th>
+								<th id="sortTime3">剩余时间</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -215,7 +215,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'HH:mm')} : ''"></td>
 								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 8 * 60 *1000), 'HH:mm')} : ''"></td>
+								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 480000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -223,15 +223,15 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 						<table id="myAllTable_out" class="table table-striped tablesorter tablesorter-blue" style="width:49%;position:relative; float:right;">
 							<thead>
 							<tr>
-								<th>FlightingID</th>
-								<th>DEP</th>
-								<th>DES</th>
+								<th>航班号</th>
+								<th>起飞机场</th>
+								<th>目的机场</th>
 								<th>状态</th>
-								<th>预落时间</th>
-								<th>实际降落时间</th>
-								<th>PASS1</th>
-								<th>PASS2</th>
-								<th id="sortTime3">REMAIN_TIME</th>
+								<th>预起时间</th>
+								<th>实际起飞时间</th>
+								<th>过点时间1</th>
+								<th>过点时间2</th>
+								<th id="sortTime3">剩余时间</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -245,7 +245,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'HH:mm')} : ''"></td>
 								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(new java.util.Date(port.ETO.getTime() + 600000), 'HH:mm')} : ''"></td>
+								<td th:text="${port.ETO} ? ${#dates.format(new java.util.Date(port.ETO.getTime() + 480000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
