@@ -79,4 +79,30 @@ public interface PortDao {
     
     @Select("select IFPLID,ARCID,WKTRC,ADEP,ADES,ATD,EOBT,ARCREG,SsrCode,STATUS,RTE,SECTOR from fdr where ADEP='ZSJN' and EOBT is not null and EOBT >=#{startTime,jdbcType=VARCHAR} and EOBT <=#{endTime,jdbcType=VARCHAR} order by EOBT asc")
     List<LeavePort> getToFlyLeavePortFromJinan(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    
+    
+    /**
+     * 以下为区调数据
+     */
+    @Select("select "
+    		+ " ff.FDRID,ff.PTID,ff.ETO,f.ARCID,f.ADEP,f.ADES,f.RTE,f.EOBT,f.ETA,f.ATD,f.ATA,f.STATUS,f.COUPLE,f.COUPLED,f.SECTOR"
+    		+ " from fdrfix ff "
+    		+ " left join fdr f "
+    		+ " on ff.`FDRID`=f.`IFPLID` "
+    		+ " where f.`ADEP`=#{airPort,jdbcType=VARCHAR} "
+    		+ " and f.LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) "
+    		+ " and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') "
+    		+ " and ff.`ETO` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') "
+    		+ " and ff.`PTID` in <foreach collection=\"pointList\" item=\"item\" separator=\",\" open=\"(\" close=\")\">#{item}</foreach>")
+    List<FlyData> getLeavingDataForQuDiao(@Param("airPort") String airPort, @Param("pointList") List<String> pointList);
+
+    @Select("select th.`FLIGHTID` from trackhis th where th.`HIGH` <= 8000 group by th.`FLIGHTID`")
+	List<String> getNowCommandARCIDForQuDiao();
+
+    @Select("select f.ARCID,f.ADEP,f.ADES,f.RTE,f.EOBT,f.ETA,f.ATD,f.ATA,f.STATUS,f.COUPLE,f.COUPLED,f.SECTOR from fdr f where f.LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and f.ARCID in <foreach collection=\"arcidList\" item=\"item\" separator=\",\" open=\"(\" close=\")\">#{item}</foreach>")
+	List<FlyData> getFlyDataByARCIDList(@Param("arcidList") List<String> arcIdList);
+
+    @Select("select FDRID,PTID,ETO from fdrfix where FDRID in <foreach collection=\"fdridList\" item=\"item\" separator=\",\" open=\"(\" close=\")\">#{item}</foreach>")
+	List<EnterTimeVo> getByFdrIdList(@Param("fdridList") List<String> fdridList);
+    
 }
