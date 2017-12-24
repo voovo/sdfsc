@@ -385,8 +385,8 @@ public class PortService {
         }
         
         
-        for (Iterator<LeavePort> it = allList.iterator(); it.hasNext(); ) {
-            LeavePort port = it.next();
+        for (Iterator<FlyData> it = nowCommandFLyDataList.iterator(); it.hasNext(); ) {
+        	FlyData port = it.next();
             Date time = port.getATD();
             if (time == null) {
                 time = port.getEOBT();
@@ -407,7 +407,6 @@ public class PortService {
             } else {
                 it.remove();
             }
-
         }
         if (null != nowQuDiaoList && nowQuDiaoList.size() > 0) {
             for (LeavePort port : nowQuDiaoList) {
