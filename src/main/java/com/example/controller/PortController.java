@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.domain.DTO.AreaPort;
 import com.example.domain.DTO.EnterPort;
 import com.example.domain.DTO.ExperiencePort;
+import com.example.domain.DTO.FlyData;
 import com.example.domain.DTO.LeavePort;
 import com.example.domain.DTO.ZSJNPort;
 import com.example.service.PortService;
@@ -73,10 +74,10 @@ public class PortController {
         Date now = PortService.getNOW();
         
         //出港
-        List<LeavePort> leavePorts = portService.getLeavePortTableForQuDiao(now);
+        List<FlyData> leavePorts = portService.getLeavePortTableForQuDiao(now);
         model.addAttribute("leavePorts", leavePorts);
         //入港
-        List<EnterPort> enterPorts = portService.getEnterPortTableForQuDiao(now);
+        List<FlyData> enterPorts = portService.getEnterPortTableForQuDiao(now);
         model.addAttribute("enterPorts", enterPorts);
         
         model.addAttribute("nowTime", PortService.DATE_FORMAT.format(now));

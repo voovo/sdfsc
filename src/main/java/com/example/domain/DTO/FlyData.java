@@ -29,11 +29,15 @@ public class FlyData {
     Date ATA;
     //状态
     String STATUS;
+    // 过点时间1
+    Date pass1;
+    // 过点时间2
+    Date pass2;
     
     String SECTOR;
-
+    // 生命周期时长（分钟）
     int interval;
-    //分钟段
+    // 生命周期中开始时间距当前时间有几分钟
     int minutes;
     
     String direction;
@@ -147,6 +151,10 @@ public class FlyData {
 	public void setETO(String eTO) {
 		ETO = transStr2Date(eTO);
 	}
+	
+	public void setETO(Date eTO) {
+		ETO = eTO;
+	}
 
 	public String getPTID() {
 		return PTID;
@@ -170,6 +178,22 @@ public class FlyData {
 
 	public void setATA(String aTA) {
 		ATA = transStr2Date(aTA);
+	}
+	
+	public Date getPass1() {
+		return pass1;
+	}
+
+	public void setPass1(Date pass1) {
+		this.pass1 = pass1;
+	}
+
+	public Date getPass2() {
+		return pass2;
+	}
+
+	public void setPass2(Date pass2) {
+		this.pass2 = pass2;
 	}
 
 	public static Date transStr2Date(String str) {
