@@ -303,19 +303,17 @@ public class PortService {
         return retList;
     }
     
-    //区调出港航班
-    public List<FlyData> getLeavePortTableForQuDiao(Date nowTime) {
-        
+    
+    //区调 北扇 航班
+    public List<FlyData> getNorthFlyDataForQuDiao() {
+    	Date nowTime = getNOW();
         String haveFlyingStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
         List<LeavePort> haveFlyingLeavePortList = null;
-//        logger.debug("haveFlyingLeavePortList:{}", gson.toJson(haveFlyingLeavePortList));
         
-        String startTime = DATE_FORMAT_2.format(PortService.getNOW());
-        String endTime = DATE_FORMAT_2.format(DateUtils.addHours(PortService.getNOW(), 3));
-        // 北扇区
+        // 北扇区 出港
         List<String> northSectorList = Lists.newArrayList("NE","NW");
-        List<String> northPassPointList = Lists.newArrayList("REPOL","WFG", "GULEK");
-        List<FlyData> northToLeaveList = portDao.getLeavingDataForQuDiao(AIR_PORT, northPassPointList);
+        List<String> northLeavePassPointList = Lists.newArrayList("REPOL","WFG", "GULEK");
+        List<FlyData> northToLeaveList = portDao.getLeavingDataForQuDiao(AIR_PORT, northLeavePassPointList);
         
         List<FlyData> northQuDiaoList = new ArrayList<>();
         for (FlyData port : northToLeaveList) {
@@ -345,73 +343,9 @@ public class PortService {
 			northQuDiaoList.add(port);
         }
         
-        List<FlyData> nowCommandFLyDataList = null;
-        List<String> nowCommandARCIDList = portDao.getNowCommandARCIDForQuDiao();
-        if (!CollectionUtils.isEmpty(nowCommandARCIDList)) {
-        	nowCommandFLyDataList = portDao.getFlyDataByARCIDList(nowCommandARCIDList);
-        	List<String> ifplidList = Lists.transform(nowCommandFLyDataList, new Function<FlyData, String>(){
-        		@Override
-        		public String apply(FlyData arg0) {
-        			return arg0.getIFPLID();
-        		}});
-        	if (!CollectionUtils.isEmpty(ifplidList)) {
-        		List<EnterTimeVo> passPointList = portDao.getByFdrIdList(ifplidList);
-        		Map<String, List<EnterTimeVo>> passPointMap = new HashMap<>();
-        		if (!CollectionUtils.isEmpty(passPointList)) {
-        			for (EnterTimeVo vo : passPointList) {
-        				if (passPointMap.containsKey(vo.getFDRID())) {
-        					passPointMap.get(vo.getFDRID()).add(vo);
-        				} else {
-        					passPointMap.put(vo.getFDRID(), Lists.newArrayList(vo));
-        				}
-        			}
-        		}
-        		
-        		for (FlyData port : nowCommandFLyDataList) {
-        			if (port.getADEP().equals(AIR_PORT)) {
-        				// 如果是出港飞机
-        				for (EnterTimeVo vo : passPointMap.get(port.getIFPLID())) {
-        					if (northPassPointList.contains(vo.getPTID())) {
-        						port.setPTID(vo.getPTID());
-        						port.setETO(vo.getETO());
-        						break;
-        					}
-        				}
-        			}
-        			Date pass1 = nowTime;
-        			Date pass2 = port.getETO();
-        			port.setPass1(pass1);
-                	port.setPass2(pass2);
-        			long intervalMis = pass2.getTime() - nowTime.getTime();
-        			int intervalMinutue = (int) (intervalMis / 60000) ;
-        			port.setInterval(intervalMinutue);
-        			port.setMinutes(0);
-        			if (logger.isDebugEnabled()) {
-        				logger.debug("\nARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), pass1, pass2, intervalMinutue);
-        			}
-        		}
-        	}
-        }
-        
-        List<FlyData> retList = Lists.newArrayList(northQuDiaoList);
-        if (!CollectionUtils.isEmpty(nowCommandFLyDataList)) {
-        	retList.addAll(nowCommandFLyDataList);
-        }
-        return retList;
-    }
-
-    //区调进港表航班
-    public List<FlyData> getEnterPortTableForQuDiao(Date nowTime) {
-        if (null == nowTime) {
-            nowTime = getNOW();
-        }
-        String haveArrivedStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
-        List<EnterPort> haveArrivedEnterPortList = portDao.getHaveArrivedEnterPortFromJinan(haveArrivedStartTime);
-//        logger.debug("过去一小时进近入港数据:{}", gson.toJson(haveArrivedEnterPortList));
-     // 北扇区
-        List<String> northSectorList = Lists.newArrayList("NE","NW");
-        List<String> northPassPointList = Lists.newArrayList("REPOL", "BASOV","WFG", "P291", "PANKI", "WXI");
-        List<FlyData> northToEnterList = portDao.getEnterDataForQuDiao(AIR_PORT, northPassPointList);
+        // 北扇区 进港
+        List<String> northEnterPassPointList = Lists.newArrayList("REPOL", "BASOV","WFG", "P291", "PANKI", "WXI");
+        List<FlyData> northToEnterList = portDao.getEnterDataForQuDiao(AIR_PORT, northEnterPassPointList);
         
         Map<String, FlyData> northQuDiaoMap = new HashMap<>();
         for (FlyData port : northToEnterList) {
@@ -475,7 +409,18 @@ public class PortService {
         		}
         		
         		for (FlyData port : nowCommandFLyDataList) {
-        			if (port.getADES().equals(AIR_PORT)) {
+        			Date pass1 = nowTime;
+        			Date pass2 = port.getETO();
+        			if (port.getADEP().equals(AIR_PORT)) {
+        				// 如果是出港飞机
+        				for (EnterTimeVo vo : passPointMap.get(port.getIFPLID())) {
+        					if (northEnterPassPointList.contains(vo.getPTID())) {
+        						port.setPTID(vo.getPTID());
+        						port.setETO(vo.getETO());
+        						break;
+        					}
+        				}
+        			} else if (port.getADES().equals(AIR_PORT)) {
         				// 如果是出港飞机
         				for (EnterTimeVo vo : passPointMap.get(port.getIFPLID())) {
         					if (port.getPTID().equals("BASOV") || port.getPTID().equals("P291") || port.getPTID().equals("PANKI")) {
@@ -487,10 +432,8 @@ public class PortService {
         		        	} 
         				}
         			}
-        			Date pass1 = nowTime;
-        			Date pass2 = port.getETO();
         			port.setPass1(pass1);
-                	port.setPass2(pass2);
+        			port.setPass2(pass2);
         			long intervalMis = pass2.getTime() - nowTime.getTime();
         			int intervalMinutue = (int) (intervalMis / 60000) ;
         			port.setInterval(intervalMinutue);
@@ -502,12 +445,19 @@ public class PortService {
         	}
         }
         
-        List<FlyData> retList = Lists.newArrayList(northQuDiaoMap.values());
+        List<FlyData> retList = Lists.newArrayList(northQuDiaoList);
+        northQuDiaoList.addAll(northQuDiaoMap.values());
         if (!CollectionUtils.isEmpty(nowCommandFLyDataList)) {
         	retList.addAll(nowCommandFLyDataList);
         }
         return retList;
     }
+    
+    public List<FlyData> getFlyOverData() {
+    	List<String> northEnterPassPointList = Lists.newArrayList("WFG", "GULEK","WFG", "P291", "PANKI", "WXI");
+        List<FlyData> northToEnterList = portDao.getEnterDataForQuDiao(AIR_PORT, northEnterPassPointList);
+    }
+
 
     public List<AllPort> getAllPortTable(Date nowTime) {
         List<AllPort> leavePorts = portDao.getAllPortFromJinan();
