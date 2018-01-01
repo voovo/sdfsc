@@ -23,18 +23,18 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 		<!--//side-bar-->
 		<div class="col-sm-9  col-md-10 col-md-offset-2 main about-main">
 			<div>
-				<button id="leaveButton" class="btn btn-primary"> 出港表
+				<button id="leaveButton" class="btn btn-primary"> 北扇表
 				</button>
-				<button id="enterButton" class="btn btn-primary">进港表
+				<button id="enterButton" class="btn btn-primary">南扇表
 				</button>
-				<button id="allButton" class="btn btn-primary">进港出港表
+				<button id="allButton" class="btn btn-primary">南扇北扇表
 				</button>
 				<div style="height: 10px"></div>
 				<div th:include="common/buttons :: buttons('')"></div>
 			</div>
 			<br>
 			<div id="leaveTable" class="services" style="display: none">
-				<h3>出港表(总数：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>
+				<h3>北扇表(总数：<span id="leavePortsSize" th:text="${leavePorts.size()}"></span>个）</h3>
 				<!--service-page-->
 				<div class="servcs-page  text-center">
 					<div class="table-chugang">
@@ -87,8 +87,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.pass2} ? ${#dates.format(port.pass2, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -99,7 +99,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			</div>
 			<!--//service-page-->
 			<div id="enterTable" class="services active" style="display: none">
-				<h3>进港表(总数：<span id="enterPortsSize" th:text="${enterPorts.size()}"></span>个）</h3>
+				<h3>南扇表(总数：<span id="enterPortsSize" th:text="${enterPorts.size()}"></span>个）</h3>
 				<!--service-page-->
 				<div class="servcs-page  text-center">
 					<div class="table-chugang">
@@ -153,8 +153,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'yyyy-MM-dd HH:mm')} : ''"></td>
 								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'yyyy-MM-dd HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 8 * 60 *1000), 'HH:mm')} : ''"></td>
+								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'yyyy-MM-dd HH:mm')} : ''"></td>
+								<td th:text="${port.pass2} ? ${#dates.format(new java.util.Date(port.pass2.getTime() + 8 * 60 *1000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -163,7 +163,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 				</div>
 			</div>
 			<div id="allTable" class="services active" style="display: none">
-				<h3 style="text-align: left;margin-top: 15px">进港出港表(总数：<span id="allPortsSize" th:text="${leavePorts.size() + enterPorts.size()}"></span>个）</h3>
+				<h3 style="text-align: left;margin-top: 15px">南扇北扇表(总数：<span id="allPortsSize" th:text="${leavePorts.size() + enterPorts.size()}"></span>个）</h3>
 				<!--service-page-->
 				<div class="servcs-page  text-center">
 					<div class="table-chugang">
@@ -214,8 +214,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.ADES}"></td>
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(port.ETO, 'HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(new java.util.Date(port.TNA.getTime() + 480000), 'HH:mm')} : ''"></td>
+								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
+								<td th:text="${port.pass2} ? ${#dates.format(new java.util.Date(port.pass2.getTime() + 480000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -244,8 +244,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 								<td th:text="${port.STATUS}"></td>
 								<td th:text="${port.EOBT} ? ${#dates.format(port.EOBT, 'HH:mm')} : ''"></td>
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'HH:mm')} : ''"></td>
-								<td th:text="${port.TNA} ? ${#dates.format(port.TNA, 'HH:mm')} : ''"></td>
-								<td th:text="${port.ETO} ? ${#dates.format(new java.util.Date(port.ETO.getTime() + 480000), 'HH:mm')} : ''"></td>
+								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
+								<td th:text="${port.pass2} ? ${#dates.format(new java.util.Date(port.pass2.getTime() + 480000), 'HH:mm')} : ''"></td>
 								<td class="portMin" th:text="${port.minutes}"></td>
 							</tr>
 							</tbody>
@@ -893,12 +893,12 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 				trigger: 'axis'
 			},
 			legend: {
-				data:['出港进港总数','出港','进港'],
+				data:['北扇南扇总数','北扇','南扇'],
 				left: 'left'
 			},
 
 //			legend: {
-//				data: ['全部航班','出港航班','进港航班']
+//				data: ['全部航班','北扇航班','南扇航班']
 //			},
 			grid: {
 				left: '3%',
@@ -942,17 +942,17 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 			],
 			series: [
 				{
-					name: '出港',
+					name: '北扇',
 					type: 'line',
 					data: leaveCounts
 				},
 				{
-					name: '进港',
+					name: '南扇',
 					type: 'line',
 					data: enterCounts
 				},
 				{
-					name: '出港进港总数',
+					name: '北扇南扇总数',
 					type: 'line',
 					data: countAll,
 					markLine: {
@@ -977,7 +977,7 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 					}
 				}
 				else {
-					result += "进港暂无";
+					result += "南扇暂无";
 				}
 				result += "<br>";
 				if (params[1].name) {

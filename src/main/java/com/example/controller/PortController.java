@@ -77,7 +77,7 @@ public class PortController {
         List<FlyData> leavePorts = portService.getNorthFlyDataForQuDiao();
         model.addAttribute("leavePorts", leavePorts);
         //入港
-        List<FlyData> enterPorts = portService.getEnterPortTableForQuDiao(now);
+        List<FlyData> enterPorts = portService.getSouthFlyDataForQuDiao();
         model.addAttribute("enterPorts", enterPorts);
         
         model.addAttribute("nowTime", PortService.DATE_FORMAT.format(now));
