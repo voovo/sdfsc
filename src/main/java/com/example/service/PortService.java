@@ -329,9 +329,9 @@ public class PortService {
         	
         	Date pass1 = null, pass2 = null;
         	if (port.getPTID().equals("REPOL") || port.getPTID().equals("WFG")) {
-        		pass1 = DateUtils.addMinutes(port.getATD(), 10); 
+        		pass1 = DateUtils.addMinutes(port.getATD() == null ? port.getEOBT() : port.getATD(), 10); 
         	} else if (port.getPTID().equals("GULEK")) {
-        		pass1 = port.getATD(); 
+        		pass1 = port.getATD() == null ? port.getEOBT() : port.getATD(); 
         	}
         	if (null == pass1) {
         		continue;
@@ -385,7 +385,7 @@ public class PortService {
         		long intervalMis = northQuDiaoMap.get(port.getIFPLID()).getPass2().getTime() - northQuDiaoMap.get(port.getIFPLID()).getPass1().getTime();
         		int intervalMinutue = (int) (intervalMis / 60000);
         		northQuDiaoMap.get(port.getIFPLID()).setInterval(intervalMinutue);
-        		northQuDiaoMap.get(port.getIFPLID()).setMinutes((int)(port.getPass1().getTime() - nowTime.getTime()) / 6000);
+        		northQuDiaoMap.get(port.getIFPLID()).setMinutes((int)(northQuDiaoMap.get(port.getIFPLID()).getPass1().getTime() - nowTime.getTime()) / 6000);
         		if (logger.isDebugEnabled()) {
         			logger.debug("\n---------2-----ADES:ZSJN-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), port.getPass1(), port.getPass2(), intervalMinutue);
         		}
