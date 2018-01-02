@@ -314,7 +314,6 @@ public class PortService {
         List<LeavePort> haveFlyingLeavePortList = null;
         
         // 北扇区 出港
-        List<String> northSectorList = Lists.newArrayList("NE","NW");
         List<String> northPassPointList = Lists.newArrayList("REPOL","WFG", "GULEK", "BASOV", "P291", "PANKI", "WXI");
         List<String> leavePortList = Lists.newArrayList(JN_AIR_PORT, "ZSQD", "ZBSJ", "ZBTJ", "ZBAA");
         List<String> enterPortList = Lists.newArrayList(JN_AIR_PORT, "ZSQD", "ZHCC", "ZHHH", "ZBSJ", "ZBTJ", "ZBNY");
@@ -322,7 +321,7 @@ public class PortService {
         
         List<FlyData> northQuDiaoList = new ArrayList<>();
         for (FlyData port : northFlyDataList) {
-        	if (!port.getADEP().equals(JN_AIR_PORT) || port.getSECTOR().startsWith("AP") || northSectorList.contains(port.getSECTOR())) {
+        	if (!port.getADEP().equals(JN_AIR_PORT) || port.getSECTOR().startsWith("AP")) {
         		// 已经进入 进近，或者进入当前管制，则忽略
         		continue;
         	}
@@ -352,7 +351,7 @@ public class PortService {
         // 北扇区 进港
         Map<String, FlyData> northQuDiaoMap = new HashMap<>();
         for (FlyData port : northFlyDataList) {
-        	if (!port.getADES().equals(JN_AIR_PORT) || port.getSECTOR().startsWith("AP") || northSectorList.contains(port.getSECTOR())) {
+        	if (!port.getADES().equals(JN_AIR_PORT) || port.getSECTOR().startsWith("AP")) {
         		// 已经进入 进近，或者进入当前管制，则忽略
         		continue;
         	}
