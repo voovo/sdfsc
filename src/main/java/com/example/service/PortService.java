@@ -50,9 +50,6 @@ public class PortService {
     
     public static final SimpleDateFormat DATE_FORMAT_2 = new SimpleDateFormat("yyyyMMddHHmmss");
     
-    public static final List<String> LEAVE_PASS_POINT = Lists.newArrayList("REPOL", "WFG", "GULEK");
-    public static final List<String> ENTER_PASS_POINT = Lists.newArrayList("BASOV", "P291", "PANKI", "WXI");
-    
     @Autowired
     private PortDao portDao;
     
