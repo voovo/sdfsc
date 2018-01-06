@@ -50,8 +50,54 @@ public class SqlProvider {
 	    		sql.append(" f.`ADES` in (").append(enterPorts).append(") ");
 	    	}
 	    		
-	    	sql.append(" and f.LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) ")
-	    		.append(" and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
+	    	sql.append(" and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
+	    		.append(" and ff.`ETO` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') ")
+	    		.append(" and ff.`PTID` in (").append(ptids).append(") ");
+	    	return sql.toString();
+	}
+	
+	
+	public String selectLeaveFlyDataForJinJin(Map<String, Object> params) {
+		List<String> pointList = (List<String>) params.get("pointList");;
+		String ptids = null;
+		if (!CollectionUtils.isEmpty(pointList)) {
+			StringBuilder tmpStr = new StringBuilder();
+			for (String port : pointList) {
+				tmpStr.append(",\"").append(port).append("\"");
+			}
+			ptids = tmpStr.substring(1);
+		}
+	    StringBuilder sql = new StringBuilder("select ") 
+	    		.append(" f.IFPLID,ff.PTID,ff.ETO,f.ARCID,f.ADEP,f.ADES,f.RTE,f.EOBT,f.ETA,f.ATD,f.ATA,f.STATUS,f.COUPLE,f.COUPLED,f.SECTOR")
+	    		.append(" from fdrfix ff ")
+	    		.append(" left join fdr f ")
+	    		.append(" on ff.`FDRID`=f.`IFPLID` ")
+	    		.append(" where f.`ADEP`='ZSJN'");
+	    		
+	    sql.append(" and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
+	    		.append(" and ff.`ETO` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') ")
+	    		.append(" and ff.`PTID` in (").append(ptids).append(") ");
+	    	return sql.toString();
+	}
+	
+	public String selectEnterFlyDataForJinJin(Map<String, Object> params) {
+		List<String> pointList = (List<String>) params.get("pointList");;
+		String ptids = null;
+		if (!CollectionUtils.isEmpty(pointList)) {
+			StringBuilder tmpStr = new StringBuilder();
+			for (String port : pointList) {
+				tmpStr.append(",\"").append(port).append("\"");
+			}
+			ptids = tmpStr.substring(1);
+		}
+	    StringBuilder sql = new StringBuilder("select ") 
+	    		.append(" f.IFPLID,ff.PTID,ff.ETO,f.ARCID,f.ADEP,f.ADES,f.RTE,f.EOBT,f.ETA,f.ATD,f.ATA,f.STATUS,f.COUPLE,f.COUPLED,f.SECTOR")
+	    		.append(" from fdrfix ff ")
+	    		.append(" left join fdr f ")
+	    		.append(" on ff.`FDRID`=f.`IFPLID` ")
+	    		.append(" where f.`ADES`='ZSJN'");
+	    		
+	    sql.append(" and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
 	    		.append(" and ff.`ETO` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') ")
 	    		.append(" and ff.`PTID` in (").append(ptids).append(") ");
 	    	return sql.toString();

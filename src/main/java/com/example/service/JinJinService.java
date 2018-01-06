@@ -104,10 +104,10 @@ public class JinJinService {
         		leaveJinJinMap.get(fd.getIFPLID()).setInterval(intervalMinutue);
         		leaveJinJinMap.get(fd.getIFPLID()).setMinutes((int)(leaveJinJinMap.get(fd.getIFPLID()).getPass1().getTime() - nowTime.getTime()) / 6000);
         		if (logger.isDebugEnabled()) {
-        			logger.debug("\n---------Leave---3-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), fd.getPass1(), fd.getPass2(), intervalMinutue);
+        			logger.debug("\n---------Leave---1-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), leaveJinJinMap.get(fd.getIFPLID()).getPass1(), leaveJinJinMap.get(fd.getIFPLID()).getPass2(), intervalMinutue);
         		}
+        		jinjinList.add(leaveJinJinMap.get(fd.getIFPLID()));
         	}
-			jinjinList.add(fd);
         }
         
         
@@ -144,7 +144,7 @@ public class JinJinService {
             		tmp.setMinutes(0);
             		nowjinjinList.add(tmp);
             		if (logger.isDebugEnabled()) {
-            			logger.debug("\n---------Leave---3-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), fd.getPass1(), fd.getPass2(), intervalMinutue);
+            			logger.debug("\n---------Leave---2-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", tmp.getARCID(), tmp.getIFPLID(), tmp.getPass1(), tmp.getPass2(), intervalMinutue);
             		}
             	}
             }
@@ -205,9 +205,9 @@ public class JinJinService {
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
-        	fd.setMinutes((int)(pass2.getTime() - pass1.getTime()) / 6000);
+        	fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 6000);
         	if (logger.isDebugEnabled()) {
-        		logger.debug("\n---------JinJin--1------------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
+        		logger.debug("\n---------Enter--1------------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
         	}
         	jinjinList.add(fd);
         }
@@ -240,7 +240,7 @@ public class JinJinService {
             	fd.setInterval(intervalMinutue);
             	fd.setMinutes(0);
     			if (logger.isDebugEnabled()) {
-            		logger.debug("\n----------jinjin---2---------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
+            		logger.debug("\n----------Enter---2---------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
             	}
     			nowjinjinList.add(fd);
             }
