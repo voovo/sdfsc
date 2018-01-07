@@ -49,8 +49,8 @@ public class JinJinSqlProvider {
 	    		.append(" on ff.`FDRID`=f.`IFPLID` ")
 	    		.append(" where f.`ADES`='ZSJN'");
 	    		
-	    sql.append(" and ff.`ETO` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
-	    		.append(" and ff.`ETO` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') ")
+	    sql.append(" and f.`ETA` >= DATE_FORMAT(DATE_SUB(now(), INTERVAL 477 MINUTE), '%Y%m%d%H%i%S') ")
+	    		.append(" and f.`ETA` <= DATE_FORMAT(DATE_SUB(now(), INTERVAL 302 MINUTE), '%Y%m%d%H%i%S') ")
 	    		.append(" and ff.`PTID` in (").append(ptids).append(") ");
 	    	return sql.toString();
 	}

@@ -93,18 +93,18 @@ public class PortService {
 			ep.setETO(outJinJinTime);
 			ep.setInterval(intervalMinutue);
 			if (logger.isDebugEnabled()) {
-        		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+        		logger.debug("\n------Leave-------ARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{}", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
         	}
 			jinjinList.add(ep);
         }
         
         
         List<LeavePort> nowLeavePortList = portDao.getNowLeavePortFromJinan();
-        if (logger.isDebugEnabled()) {
-        	for (LeavePort lp : nowLeavePortList) {
-        		logger.debug("nowLeavePortList:{}", lp.getARCID());
-        	}
-        }
+//        if (logger.isDebugEnabled()) {
+//        	for (LeavePort lp : nowLeavePortList) {
+//        		logger.debug("nowLeavePortList:{}", lp.getARCID());
+//        	}
+//        }
         
         List<LeavePort> nowjinjinList = new ArrayList<>();
         if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
@@ -134,7 +134,7 @@ public class PortService {
     			port.setETO(outJinJinTime);
     			port.setInterval(intervalMinutue);
     			if (logger.isDebugEnabled()) {
-            		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+            		logger.debug("\n-------Leave-------ARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
             	}
     			nowjinjinList.add(port);
             }
@@ -220,11 +220,10 @@ public class PortService {
         	long intervalMis = tnaTime.getTime() - etoTime.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	ep.setInterval(intervalMinutue);
-        	ep.setETA(ep.getETA());
         	ep.setTNA(tnaTime);
         	ep.setETO(etoTime);
         	if (logger.isDebugEnabled()) {
-        		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+        		logger.debug("\n-------Enter---------ARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", ep.getARCID(), ep.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
         	}
         	jinjinList.add(ep);
         }
@@ -254,7 +253,7 @@ public class PortService {
     			port.setTNA(tnaTime);
     			port.setETO(outJinJinTime);
     			if (logger.isDebugEnabled()) {
-            		logger.debug("\nARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tna.getETO(), eto.getETO(), intervalMinutue);
+            		logger.debug("\n-------Enter---------ARCID:{}, FDRID:{} TNA :{}, ETO:{}, IntervalMis:{} ", port.getARCID(), port.getIFPLID(), tnaTime, eto == null ? "": eto.getETO(), intervalMinutue);
             	}
     			nowjinjinList.add(port);
             }

@@ -103,9 +103,13 @@ public class JinJinService {
         		long intervalMis = leaveJinJinMap.get(fd.getIFPLID()).getPass2().getTime() - leaveJinJinMap.get(fd.getIFPLID()).getPass1().getTime();
         		int intervalMinutue = (int) (intervalMis / 60000);
         		leaveJinJinMap.get(fd.getIFPLID()).setInterval(intervalMinutue);
-        		leaveJinJinMap.get(fd.getIFPLID()).setMinutes((int)(leaveJinJinMap.get(fd.getIFPLID()).getPass1().getTime() - nowTime.getTime()) / 6000);
+        		Date pointTime = leaveJinJinMap.get(fd.getIFPLID()).getATD();
+                if (pointTime == null) {
+                    pointTime = leaveJinJinMap.get(fd.getIFPLID()).getEOBT();
+                }
+        		leaveJinJinMap.get(fd.getIFPLID()).setMinutes((int)(pointTime.getTime() - nowTime.getTime()) / 60000);
         		if (logger.isDebugEnabled()) {
-        			logger.debug("\n---------Leave---1-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), leaveJinJinMap.get(fd.getIFPLID()).getPass1(), leaveJinJinMap.get(fd.getIFPLID()).getPass2(), intervalMinutue);
+        			logger.debug("\n---------Leave---1-----{}", leaveJinJinMap.get(fd.getIFPLID()));
         		}
         		jinjinList.add(leaveJinJinMap.get(fd.getIFPLID()));
         	}
@@ -142,7 +146,7 @@ public class JinJinService {
             		tmp.setMinutes(0);
             		nowjinjinList.add(tmp);
             		if (logger.isDebugEnabled()) {
-            			logger.debug("\n---------Leave---2-----ARCID:{}, FDRID:{} PASS_1 :{}, PASS_2:{}, IntervalMis:{} ", tmp.getARCID(), tmp.getIFPLID(), tmp.getPass1(), tmp.getPass2(), intervalMinutue);
+            			logger.debug("\n---------Leave---2-----{} ", tmp);
             		}
             	}
             }
@@ -156,15 +160,16 @@ public class JinJinService {
         if (null != nowjinjinList && nowjinjinList.size() > 0) {
             allList.addAll(nowjinjinList);
         }
-        Set<String> doneSet = new HashSet<>();
-        List<FlyData> retList = new ArrayList<>();
-        for (FlyData port : allList) {
-        	if (!doneSet.contains(port.getARCID() + ":" + port.getATD())) {
-        		retList.add(port);
-        		doneSet.add(port.getARCID() + ":" + port.getATD());
-        	}
-        }
-        return retList;
+        return allList;
+//        Set<String> doneSet = new HashSet<>();
+//        List<FlyData> retList = new ArrayList<>();
+//        for (FlyData port : allList) {
+//        	if (!doneSet.contains(port.getARCID() + ":" + port.getATD())) {
+//        		retList.add(port);
+//        		doneSet.add(port.getARCID() + ":" + port.getATD());
+//        	}
+//        }
+//        return retList;
     }
 
     //进近进港表航班
@@ -203,9 +208,9 @@ public class JinJinService {
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
-        	fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 6000);
+        	fd.setMinutes((int)(fd.getETA().getTime() - nowTime.getTime()) / 60000);
         	if (logger.isDebugEnabled()) {
-        		logger.debug("\n---------Enter--1------------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
+        		logger.debug("\n---------Enter--1------------{} ", fd);
         	}
         	jinjinList.add(fd);
         }
@@ -235,7 +240,7 @@ public class JinJinService {
             	fd.setInterval(intervalMinutue);
             	fd.setMinutes(0);
     			if (logger.isDebugEnabled()) {
-            		logger.debug("\n----------Enter---2---------ARCID:{}, FDRID:{} PASS1 :{}, PASS2:{}, IntervalMis:{} ", fd.getARCID(), fd.getIFPLID(), pass1, pass2, intervalMinutue);
+            		logger.debug("\n----------Enter---2---------{} ", fd);
             	}
     			nowjinjinList.add(fd);
             }
@@ -250,15 +255,16 @@ public class JinJinService {
         if (null != nowjinjinList && nowjinjinList.size() > 0) {
             allList.addAll(nowjinjinList);
         }
-        Set<String> doneSet = new HashSet<>();
-        List<FlyData> retList = new ArrayList<>();
-        for (FlyData port : allList) {
-        	if (!doneSet.contains(port.getARCID() + ":" + port.getInterval())) {
-        		retList.add(port);
-        		doneSet.add(port.getARCID() + ":" + port.getInterval());
-        	}
-        }
-        return retList;
+        return allList;
+//        Set<String> doneSet = new HashSet<>();
+//        List<FlyData> retList = new ArrayList<>();
+//        for (FlyData port : allList) {
+//        	if (!doneSet.contains(port.getARCID() + ":" + port.getInterval())) {
+//        		retList.add(port);
+//        		doneSet.add(port.getARCID() + ":" + port.getInterval());
+//        	}
+//        }
+//        return retList;
     }
     
 }

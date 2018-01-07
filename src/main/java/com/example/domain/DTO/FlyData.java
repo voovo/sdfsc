@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FlyData {
+	static SimpleDateFormat simpleDateFormat_NoSec = new SimpleDateFormat("yyyyMMddHHmm");
+	static SimpleDateFormat simpleDateFormat_HaveSec  = new SimpleDateFormat("yyyyMMddHHmmss");
+	
 	//ID
 	String IFPLID;
 	// 经过的点
@@ -197,12 +200,26 @@ public class FlyData {
 	}
 
 	public static Date transStr2Date(String str) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-        try {
-            return simpleDateFormat.parse(str);
+		try {
+			if (str.length() == 12) {
+				return simpleDateFormat_NoSec.parse(str);
+			} else if (str.length() == 14) {
+				return simpleDateFormat_HaveSec.parse(str);
+			}
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
     }
+	
+	@Override
+	public String toString() {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+		return new StringBuilder("FDRID:").append(this.IFPLID)
+				.append(", ARCID:").append(this.ARCID)
+				.append(", Pass1:").append(simpleDateFormat.format(this.pass1))
+				.append(", Pass2:").append(simpleDateFormat.format(this.pass2))
+				.append(", IntervalMis:").append(this.interval)
+				.append(", Minutes:").append(this.minutes).toString();
+	}
 }

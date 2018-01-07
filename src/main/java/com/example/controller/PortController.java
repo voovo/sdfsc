@@ -39,6 +39,30 @@ public class PortController {
     @Autowired
     private PortService portService;
     
+    @RequestMapping("/jinjin2")
+    public String home(Model model, HttpServletRequest request, HttpSession session) throws ParseException, JsonProcessingException {
+        if (session.getAttribute("user") == null) {
+            return "/login";
+        }
+        Date now = PortService.getNOW();
+        
+        //出港
+        List<LeavePort> leavePorts = portService.getLeavePortTable(now);
+        model.addAttribute("leavePorts", leavePorts);
+        //入港
+        List<EnterPort> enterPorts = portService.getEnterPortTable(now);
+        model.addAttribute("enterPorts", enterPorts);
+        
+        model.addAttribute("nowTime", PortService.DATE_FORMAT.format(now));
+        model.addAttribute("JNowTime", now);
+        String message = request.getParameter("message");
+        if (message != null) {
+            model.addAttribute("message", message);
+            model.addAttribute("message", message);
+        }
+        return "jinjin2";
+    }
+    
     private void processList(int[] leaveCountLists, String[] leaveNumberLists) {
         int[] newleaveCountLists = leaveCountLists.clone();
         String[] newleaveNumberLists = leaveNumberLists.clone();
