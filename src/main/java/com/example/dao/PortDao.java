@@ -2,6 +2,7 @@ package com.example.dao;
 
 import com.example.domain.DTO.*;
 import com.example.sql.JinJinSqlProvider;
+import com.example.sql.QuDiaoSqlProvider;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -86,7 +87,7 @@ public interface PortDao {
     /**
      * 以下为区调数据
      */
-    @SelectProvider(type=JinJinSqlProvider.class, method="selectFlyDataForQuDiao")
+    @SelectProvider(type=QuDiaoSqlProvider.class, method="selectFlyDataForQuDiao")
     List<FlyData> getFlyDataForQuDiao(@Param("leavePortList") List<String> leavePortList, @Param("enterPortList") List<String> enterPortList, @Param("pointList") List<String> pointList);
 
     @Select("select th.`FLIGHTID` from trackhis th where th.FLIGHTID != '' AND th.`HIGH` <= 8000 group by th.`FLIGHTID`")
