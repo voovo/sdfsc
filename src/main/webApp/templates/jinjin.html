@@ -267,7 +267,8 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 	$(function () {
 		$("#myLeaveTable").tablesorter();
 		$("#myEnterTable").tablesorter();
-		$("#myAllTable").tablesorter();
+		$("#myAllTable_enter").tablesorter();
+		$("#myAllTable_out").tablesorter();
 	});
 </script>
 <script>
@@ -1017,7 +1018,6 @@ setTimeout('myrefresh()',60000); //指定5min刷新一次
 	function timeChange() {
 		if (timeStep == 5) {
 			//extMinute = 2;
-			extMinute = 8;
 		}
 		initLeave();
 		initEnter();

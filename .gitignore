@@ -8,6 +8,7 @@
 **/.iws
 **/.idea
 **/.metadata
+**/.DS_Store
 
 **/bin/
 /target/
