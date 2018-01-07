@@ -5,14 +5,12 @@
 function myrefresh(){ 
 	var date = new Date();
 	if (date.getMinutes() % 5 == 0) {
-		console.log('Flush');
-		//window.location.reload(); 
+		window.location.reload(); 
 	} else {
-		console.log('AAAA');
-		setTimeout('myrefresh()',60000); //指定5min刷新一次
+		setTimeout('myrefresh()',30000); //指定5min刷新一次
 	}
 } 
-setTimeout('myrefresh()',60000); //指定5min刷新一次 
+setTimeout('myrefresh()',30000); //指定5min刷新一次 
 </script> 
 <body>
 <div class="container-fluid">
