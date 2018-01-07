@@ -70,6 +70,7 @@ public class JinJinService {
         List<FlyData> haveFlyingLeavePortList = jinjinDao.getHaveLeavedFlyDataForJinJin(haveFlyingStartTime);
         
         List<String> toLeavePassPointList =  Lists.newArrayList("TNA", "GULEK","P292", "ABTUB", "P200", "BASOV", "P291", "PANKI");
+        
         List<FlyData> toFlyLeavePortList = jinjinDao.getToLeaveFlyDataForJinJin(toLeavePassPointList);
         
         List<FlyData> jinjinList = new ArrayList<>();
@@ -111,17 +112,14 @@ public class JinJinService {
         }
         
         
-        List<FlyData> nowLeavePortList = jinjinDao.getNowLeavePortForJinJin();
+        List<String> nowPassPointList = Lists.newArrayList("BASOV","P291","GULEK","P353","P200","ABTUB", "P292","PANKI");
+        List<FlyData> nowLeavePortList = jinjinDao.getNowLeavePortForJinJin(nowPassPointList);
         
         List<FlyData> nowjinjinList = new ArrayList<>();
         if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
             for (FlyData fd : nowLeavePortList) {
-                List<EnterTimeVo> enterTimeList = jinjinDao.getJinJinTimeForJinan(fd.getIFPLID(), JinJinPassPointList);
-            	if (null == enterTimeList || enterTimeList.size() <= 0) {
-            		continue;
-            	}
             	Date pass1 = nowTime, pass2 = null;
-            	if (JinJinPassPointList.contains(fd.getPTID())) {
+            	if (nowPassPointList.contains(fd.getPTID())) {
             		pass2 = fd.getETO(); 
             	}
             	if (leaveJinJinMap.containsKey(fd.getIFPLID())) {
@@ -212,14 +210,11 @@ public class JinJinService {
         	jinjinList.add(fd);
         }
         
-        List<FlyData> nowEnterPortList = jinjinDao.getNowEnterPortForJinJin();
+        List<String> nowPassPointList = Lists.newArrayList("TNA","BASOV","P291","GULEK","P353","P200","ABTUB", "P292","PANKI");
+        List<FlyData> nowEnterPortList = jinjinDao.getNowEnterPortForJinJin(nowPassPointList);
         List<FlyData> nowjinjinList = new ArrayList<>();
         if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
             for (FlyData fd : nowEnterPortList) {
-                List<EnterTimeVo> enterTimeList = jinjinDao.getJinJinTimeForJinan(fd.getIFPLID(), JinJinPassPointList);
-            	if (null == enterTimeList || enterTimeList.size() <= 0) {
-            		continue;
-            	}
             	Date pass1 = nowTime, pass2 = null;
             	if (fd.getPTID().equals("GULEK")) {
             		pass2 = DateUtils.addMinutes(fd.getETO(), 22); 
