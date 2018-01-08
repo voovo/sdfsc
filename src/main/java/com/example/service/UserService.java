@@ -23,8 +23,8 @@ public class UserService {
         Role jinchang = new Role("jichang", "机场");
 
         User adminUser = new User("admin", "admin", "admin@admin.com", admin);
-        User jinjinUser = new User("jinjin", "jinjin", "jinjin@admin.com", jinjin);
-        User quyuUser = new User("quyu", "quyu", "quyu@admin.com", quyu);
+        User jinjinUser = new User("jinjin", "7123456", "jinjin@admin.com", jinjin);
+        User quyuUser = new User("quyu", "7123456", "quyu@admin.com", quyu);
         User jinchangUser = new User("jichang", "jichang", "jichang@admin.com", jinchang);
 
         roles = new ArrayList<>();

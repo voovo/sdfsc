@@ -12,7 +12,7 @@
 		<div class="nav1">
 			<ul class="nav nav-sidebar">
 				<li><a class="hvr-rectangle-out" href="/jinjin/" th:if="${session.role} =='jinjin' or ${session.role} == 'admin'">进近流量预测</a></li>
-				<li><a class="hvr-rectangle-out" href="/area/" th:if="${session.role} =='quyu' or ${session.role} == 'admin'">区调流量预测</a></li>
+				<li><a class="hvr-rectangle-out" href="/qudiao" th:if="${session.role} =='quyu' or ${session.role} == 'admin'">区调流量预测</a></li>
 				<li><a class="hvr-rectangle-out" href="/experience/" th:if="${session.role} =='quyu' or ${session.role} == 'admin'">进近流量经验</a></li>
 				<li><a class="hvr-rectangle-out" href="/enterZSJN/" th:if="${session.role} =='jichang' or ${session.role} == 'admin'">济南机场落地航班</a></li>
 				<li><a class="hvr-rectangle-out" href="/leaveZSJN/" th:if="${session.role} =='jichang' or ${session.role} == 'admin'">济南机场起飞航班</a></li>

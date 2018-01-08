@@ -24,8 +24,14 @@ public class UserController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public RedirectView index(HttpSession session) {
         if (session.getAttribute("user") != null) {
-            return new RedirectView("/jinjin/", true, false, true);
-
+        	if (session.getAttribute("role") != null) {
+        		if (session.getAttribute("role").toString().equals("jinjin")) {
+        			return new RedirectView("/jinjin/", true, false, true);
+        		} else if (session.getAttribute("role").toString().equals("quyu")) {
+        			return new RedirectView("/qudiao", true, false, true);
+        		}
+        	}
+        	return new RedirectView("/jinjin/", true, false, true);
         }else{
             return new RedirectView("/index", true, false, true);
 
@@ -59,6 +65,11 @@ public class UserController {
         if (message.isSuccess()) {
             session.setAttribute("user", message.getOthers());
             session.setAttribute("role", ((User)message.getOthers()).getRole().getRole());
+            if (((User)message.getOthers()).getRole().getRole().equals("jinjin")) {
+            	return new RedirectView("/jinjin/", true, false, true);
+            } else if (((User)message.getOthers()).getRole().getRole().equals("quyu")) {
+            	return new RedirectView("/qudiao", true, false, true);
+            }
             return new RedirectView("/jinjin/", true, false, true);
         } else {
             model.addAttribute("message", message.getReason());
