@@ -66,8 +66,35 @@ public class JinJinService {
     //进近出港航班
     public List<FlyData> getLeavePortTable(Date nowTime) throws ParseException {
         
-        String haveFlyingStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
-        List<FlyData> haveFlyingLeavePortList = jinjinDao.getHaveLeavedFlyDataForJinJin(haveFlyingStartTime);
+        List<FlyData> haveLeavedFlyDataList = jinjinDao.getHaveLeavedFlyDataForJinJin(JinJinPassPointList);
+        
+        List<FlyData> leavedJinJinList = new ArrayList<>();
+        for (FlyData fd : haveLeavedFlyDataList) {
+        	Date pass1 = null, pass2 = null;
+        	if (fd.getPTID().equals("GULEK")) {
+        		pass2 = fd.getETO();
+        	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
+        		pass2 = fd.getETO();
+        	} else if (fd.getPTID().equals("BASOV")) {
+        		pass2 = fd.getETO();
+        	} else if (fd.getPTID().equals("P291") || fd.getPTID().equals("PANKI") ) {
+        		pass2 = fd.getETO();
+        	}
+        	pass1 = fd.getATD();
+        	if (null == pass2) {
+        		continue;
+        	}
+        	fd.setPass1(pass1);
+        	fd.setPass2(pass2);
+			long intervalMis = pass2.getTime() - pass1.getTime();
+        	int intervalMinutue = (int) (intervalMis / 60000) ;
+        	fd.setInterval(intervalMinutue);
+        	fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 60000);
+        	if (logger.isDebugEnabled()) {
+        		logger.debug("\n---------Have Leaved--1------------{} ", fd);
+        	}
+        	leavedJinJinList.add(fd);
+        }
         
         List<String> toLeavePassPointList =  Lists.newArrayList("TNA", "GULEK","P292", "ABTUB", "P200", "BASOV", "P291", "PANKI");
         
@@ -153,6 +180,9 @@ public class JinJinService {
         }
         
         List<FlyData> allList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(leavedJinJinList)) {
+        	allList.addAll(leavedJinJinList);
+        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
@@ -177,8 +207,34 @@ public class JinJinService {
         if (null == nowTime) {
             nowTime = getNOW();
         }
-        String haveArrivedStartTime = DATE_FORMAT.format(DateUtils.addHours(nowTime, -1));
-        List<FlyData> haveArrivedEnterPortList = jinjinDao.getHaveArrivedFlyDataForJinJin(haveArrivedStartTime);
+        List<FlyData> haveArrivedEnterPortList = jinjinDao.getHaveArrivedFlyDataForJinJin(JinJinPassPointList);
+        List<FlyData> arrivedJinJinList = new ArrayList<>();
+        for (FlyData fd : haveArrivedEnterPortList) {
+        	Date pass1 = null, pass2 = null;
+        	if (fd.getPTID().equals("GULEK")) {
+        		pass1 = fd.getETO();
+        	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
+        		pass1 = fd.getETO();
+        	} else if (fd.getPTID().equals("BASOV")) {
+        		pass1 = fd.getETO();
+        	} else if (fd.getPTID().equals("P291") || fd.getPTID().equals("PANKI") ) {
+        		pass1 = fd.getETO();
+        	}
+        	pass2 = fd.getATA();
+        	if (null == pass1) {
+        		continue;
+        	}
+        	fd.setPass1(pass1);
+        	fd.setPass2(pass2);
+			long intervalMis = pass2.getTime() - pass1.getTime();
+        	int intervalMinutue = (int) (intervalMis / 60000) ;
+        	fd.setInterval(intervalMinutue);
+        	fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 60000);
+        	if (logger.isDebugEnabled()) {
+        		logger.debug("\n---------Have Arrived--1------------{} ", fd);
+        	}
+        	arrivedJinJinList.add(fd);
+        }
         
         List<FlyData> toArriveEnterPortList = jinjinDao.getToArriveFlyDataForJinJin(JinJinPassPointList);
         List<FlyData> jinjinList = new ArrayList<>();
@@ -247,6 +303,9 @@ public class JinJinService {
         }
         
         List<FlyData> allList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(arrivedJinJinList)) {
+        	allList.addAll(arrivedJinJinList);
+        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
