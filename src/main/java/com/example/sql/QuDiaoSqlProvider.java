@@ -68,7 +68,7 @@ public class QuDiaoSqlProvider {
 		}
 	    StringBuilder sql = new StringBuilder("select ")
 	    		.append(" f.IFPLID, f.ARCID,f.ADEP,f.ADES,f.RTE,f.EOBT,f.ETA,f.ATD,f.ATA,f.STATUS,f.COUPLE,f.COUPLED,f.SECTOR ")
-	    		.append(" from fdr f where f.LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and f.ARCID in (").append(arcIds).append(") ");
+	    		.append(" from fdr f where f.LASTTIME >= DATE_SUB(NOW(), INTERVAL 10 MINUTE) and f.STATUS='ACT' and f.ARCID in (").append(arcIds).append(") ");
 	    	return sql.toString();
 	}
 	

@@ -16,7 +16,7 @@ public interface QuDiaoDao {
     @SelectProvider(type=QuDiaoSqlProvider.class, method="selectFlyDataForQuDiao")
     List<FlyData> getFlyDataForQuDiao(@Param("leavePortList") List<String> leavePortList, @Param("enterPortList") List<String> enterPortList, @Param("pointList") List<String> pointList);
 
-    @Select("select th.`FLIGHTID` from trackhis th where th.FLIGHTID != '' AND th.`HIGH` <= 8000 group by th.`FLIGHTID`")
+    @Select("select th.`FLIGHTID` from trackhis th where th.FLIGHTID != '' AND th.`HIGH` >= 6000 AND th.`HIGH` <= 8000 group by th.`FLIGHTID`")
 	List<String> getNowCommandARCIDForQuDiao();
 
     @SelectProvider(type=QuDiaoSqlProvider.class, method="selectFlyDataByARCIDList")
