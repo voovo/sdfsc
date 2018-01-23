@@ -180,26 +180,25 @@ public class JinJinService {
         }
         
         List<FlyData> allList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(leavedJinJinList)) {
-        	allList.addAll(leavedJinJinList);
-        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-        
         if (null != nowjinjinList && nowjinjinList.size() > 0) {
             allList.addAll(nowjinjinList);
         }
-        return allList;
-//        Set<String> doneSet = new HashSet<>();
-//        List<FlyData> retList = new ArrayList<>();
-//        for (FlyData port : allList) {
-//        	if (!doneSet.contains(port.getARCID() + ":" + port.getATD())) {
-//        		retList.add(port);
-//        		doneSet.add(port.getARCID() + ":" + port.getATD());
-//        	}
-//        }
-//        return retList;
+        if (!CollectionUtils.isEmpty(leavedJinJinList)) {
+        	allList.addAll(leavedJinJinList);
+        }
+//        return allList;
+        Set<String> doneSet = new HashSet<>();
+        List<FlyData> retList = new ArrayList<>();
+        for (FlyData port : allList) {
+        	if (!doneSet.contains(port.getARCID())) {
+        		retList.add(port);
+        		doneSet.add(port.getARCID());
+        	}
+        }
+        return retList;
     }
 
     //进近进港表航班
@@ -303,27 +302,25 @@ public class JinJinService {
         }
         
         List<FlyData> allList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(arrivedJinJinList)) {
-        	allList.addAll(arrivedJinJinList);
-        }
         if (null != jinjinList && jinjinList.size() > 0) {
             allList.addAll(jinjinList);
         }
-        
-        
         if (null != nowjinjinList && nowjinjinList.size() > 0) {
             allList.addAll(nowjinjinList);
         }
-        return allList;
-//        Set<String> doneSet = new HashSet<>();
-//        List<FlyData> retList = new ArrayList<>();
-//        for (FlyData port : allList) {
-//        	if (!doneSet.contains(port.getARCID() + ":" + port.getInterval())) {
-//        		retList.add(port);
-//        		doneSet.add(port.getARCID() + ":" + port.getInterval());
-//        	}
-//        }
-//        return retList;
+        if (!CollectionUtils.isEmpty(arrivedJinJinList)) {
+        	allList.addAll(arrivedJinJinList);
+        }
+//        return allList;
+        Set<String> doneSet = new HashSet<>();
+        List<FlyData> retList = new ArrayList<>();
+        for (FlyData port : allList) {
+        	if (!doneSet.contains(port.getARCID())) {
+        		retList.add(port);
+        		doneSet.add(port.getARCID());
+        	}
+        }
+        return retList;
     }
     
 }
