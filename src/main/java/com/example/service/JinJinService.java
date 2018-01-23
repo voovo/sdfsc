@@ -149,7 +149,7 @@ public class JinJinService {
         List<FlyData> nowjinjinList = new ArrayList<>();
         if (null != nowLeavePortList && nowLeavePortList.size() > 0) {
             for (FlyData fd : nowLeavePortList) {
-            	Date pass1 = nowTime, pass2 = null;
+            	Date pass1 = fd.getATD(), pass2 = null;
             	if (nowPassPointList.contains(fd.getPTID())) {
             		pass2 = fd.getETO(); 
             	}
@@ -170,7 +170,7 @@ public class JinJinService {
             		int intervalMinutue = (int) (intervalMis / 60000);
             		FlyData tmp = leaveJinJinMap.get(fd.getIFPLID());
             		tmp.setInterval(intervalMinutue);
-            		tmp.setMinutes(0);
+            		tmp.setMinutes((int)(tmp.getPass1().getTime() - nowTime.getTime()) / 60000);
             		nowjinjinList.add(tmp);
             		if (logger.isDebugEnabled()) {
             			logger.debug("\n---------Leave---2-----{} ", tmp);
@@ -275,14 +275,18 @@ public class JinJinService {
         List<FlyData> nowjinjinList = new ArrayList<>();
         if (null != nowEnterPortList && nowEnterPortList.size() > 0) {
             for (FlyData fd : nowEnterPortList) {
-            	Date pass1 = nowTime, pass2 = null;
+            	Date pass1 = null, pass2 = null;
             	if (fd.getPTID().equals("GULEK")) {
+            		pass1 = fd.getETO();
             		pass2 = DateUtils.addMinutes(fd.getETO(), 22); 
             	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
+            		pass1 = fd.getETO();
             		pass2 = DateUtils.addMinutes(fd.getETO(), 13); 
             	} else if (fd.getPTID().equals("BASOV")) {
+            		pass1 = fd.getETO();
             		pass2 = DateUtils.addMinutes(fd.getETO(), 20); 
             	} else if (fd.getPTID().equals("P291") || fd.getPTID().equals("PANKI") ) {
+            		pass1 = fd.getETO();
             		pass2 = DateUtils.addMinutes(fd.getETO(), 15); 
             	}
             	if (null == pass2) {
@@ -293,7 +297,7 @@ public class JinJinService {
     			long intervalMis = pass2.getTime() - pass1.getTime();
             	int intervalMinutue = (int) (intervalMis / 60000) ;
             	fd.setInterval(intervalMinutue);
-            	fd.setMinutes(0);
+            	fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 60000);
     			if (logger.isDebugEnabled()) {
             		logger.debug("\n----------Enter---2---------{} ", fd);
             	}
