@@ -84,6 +84,12 @@ public class JinJinService {
         	if (null == pass2) {
         		continue;
         	}
+        	if (pass2.after(nowTime)) {
+        		pass2 = DateUtils.addMinutes(nowTime, -5);
+        	}
+        	if (pass1.after(pass2)) {
+        		continue;
+        	}
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
 			long intervalMis = pass2.getTime() - pass1.getTime();
@@ -221,6 +227,12 @@ public class JinJinService {
         	}
         	pass2 = fd.getATA();
         	if (null == pass1) {
+        		continue;
+        	}
+        	if (pass2.after(nowTime)) {
+        		pass2 = DateUtils.addMinutes(nowTime, -5);
+        	}
+        	if (pass1.after(pass2)) {
         		continue;
         	}
         	fd.setPass1(pass1);

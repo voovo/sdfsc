@@ -78,7 +78,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 							</thead>
 							<tbody>
 							<tr th:each="port : ${leavePorts}" th:class="${port.minutes < 10}? 'danger ' : 'success'"
-									th:name="${port.minutes}">
+									th:name="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
@@ -87,7 +87,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass2} ? ${#dates.format(port.pass2, 'HH:mm')} : ''"></td>
-								<td class="portMin" th:text="${port.minutes}"></td>
+								<td class="portMin" th:text="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}"></td>
 							</tr>
 							</tbody>
 						</table>
@@ -144,7 +144,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 							<tbody>
 							<tr th:each="port : ${enterPorts}"
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
-									th:name="${port.minutes}">
+									th:name="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
@@ -153,7 +153,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 								<td th:text="${port.ATA} ? ${#dates.format(port.ATA, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass2} ? ${#dates.format(port.pass2, 'HH:mm')} : ''"></td>
-								<td class="portMin" th:text="${port.minutes}"></td>
+								<td class="portMin" th:text="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}"></td>
 							</tr>
 							</tbody>
 						</table>
@@ -206,7 +206,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 							<tbody>
 							<tr th:each="port : ${enterPorts}"
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
-									th:name="${port.minutes}">
+									th:name="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
@@ -214,7 +214,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 								<td th:text="${port.ETA} ? ${#dates.format(port.ETA, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass2} ? ${#dates.format(port.pass2, 'HH:mm')} : ''"></td>
-								<td class="portMin" th:text="${port.minutes}"></td>
+								<td class="portMin" th:text="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}"></td>
 							</tr>
 							</tbody>
 						</table>
@@ -235,7 +235,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 							<tbody>
 							<tr th:each="port : ${leavePorts}"
 									th:class="${port.minutes < 10}? 'danger ' : 'success'"
-									th:name="${port.minutes}">
+									th:name="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}">
 								<td th:text="${port.ARCID}"></td>
 								<td th:text="${port.ADEP}"></td>
 								<td th:text="${port.ADES}"></td>
@@ -244,7 +244,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 								<td th:text="${port.ATD} ? ${#dates.format(port.ATD, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass1} ? ${#dates.format(port.pass1, 'HH:mm')} : ''"></td>
 								<td th:text="${port.pass1} ? ${#dates.format(port.pass2, 'HH:mm')} : ''"></td>
-								<td class="portMin" th:text="${port.minutes}"></td>
+								<td class="portMin" th:text="${port.minutes < 0 && port.pass2 > JNowTime} ? 0 : ${port.minutes}"></td>
 							</tr>
 							</tbody>
 						</table>
@@ -1015,7 +1015,7 @@ setTimeout('myrefresh()',30000); //指定5min刷新一次
 	}
 	function timeChange() {
 		if (timeStep == 5) {
-			extMinute = 2;
+			//extMinute = 2;
 		}
 		initLeave();
 		initEnter();
