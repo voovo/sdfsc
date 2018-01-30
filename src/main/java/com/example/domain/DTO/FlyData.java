@@ -70,6 +70,9 @@ public class FlyData {
         this.ARCID = ARCID;
     }
 
+    /**
+     * 起飞机场
+     */
     public String getADEP() {
         return ADEP;
     }
@@ -78,6 +81,9 @@ public class FlyData {
         this.ADEP = ADEP;
     }
 
+    /**
+     * 降落机场
+     */
     public String getADES() {
         return ADES;
     }

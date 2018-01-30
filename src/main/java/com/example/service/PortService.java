@@ -38,6 +38,9 @@ public class PortService {
 	 
 	 EOBT	预计离开时间
 	 ATD	实际离开时间
+	 
+	 ADES	降落机场
+	 ADEP	起飞机场
 	 */
 	
 	static Logger logger = LoggerFactory.getLogger(PortService.class);

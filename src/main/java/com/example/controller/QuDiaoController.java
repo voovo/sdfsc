@@ -40,7 +40,7 @@ public class QuDiaoController {
         //北扇区
         List<FlyData> leavePorts = quDiaoService.getNorthFlyDataForQuDiao();
         model.addAttribute("leavePorts", leavePorts);
-        //入港
+        //南扇区
         List<FlyData> enterPorts = quDiaoService.getSouthFlyDataForQuDiao();
         model.addAttribute("enterPorts", enterPorts);
         
