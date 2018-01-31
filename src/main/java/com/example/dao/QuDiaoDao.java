@@ -25,4 +25,9 @@ public interface QuDiaoDao {
     @SelectProvider(type=QuDiaoSqlProvider.class, method="selectByFdrIdList")
 	List<EnterTimeVo> getByFdrIdList(@Param("fdridList") List<String> fdridList);
     
+    @SelectProvider(type=QuDiaoSqlProvider.class, method="selectByPassPointList")
+	List<FlyData> getByPassPointList(@Param("point1") String point1, @Param("point2") String point2);
+    
+    @SelectProvider(type=QuDiaoSqlProvider.class, method="selectMatchTrackhisByARCIDList")
+	List<String> getMatchTrackhisByARCIDList(@Param("arcidList") List<String> arcIdList, @Param("high") int high);
 }

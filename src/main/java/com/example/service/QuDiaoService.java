@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import com.example.domain.DTO.FlyData;
 import com.example.domain.DTO.LeavePort;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 
 @Service
@@ -423,14 +427,6 @@ public class QuDiaoService {
         			pass1 = port.getETO();
         			pass2 = DateUtils.addMinutes(port.getETO(), 15);
         		}
-        	} else if (port.getADES().equals("TUMLO")) {
-        		if (port.getPTID().equals("UDINO")) {
-        			pass1 = port.getETO();
-        			pass2 = DateUtils.addMinutes(port.getETO(), 15);
-        		} else if (port.getPTID().equals("P181")) {
-        			pass1 = port.getETO();
-        			pass2 = DateUtils.addMinutes(port.getETO(), 14);
-        		}
         	} else if (port.getADES().equals("ZBTJ") || port.getADES().equals("ZBNY") || port.getADES().equals("ZBSJ")) {
         		if (port.getPTID().equals("P181")) {
         			pass1 = port.getETO();
@@ -490,6 +486,11 @@ public class QuDiaoService {
         		}
         	}
         }
+        
+        //只在空中过点，但是无法明确起飞机场或者降落机场的
+        List<FlyData> udinoToTumloList = getFlyOverDataByPassPoint("UDINO", "TUMLO", "UDINO", 7800, 15);
+        List<FlyData> p181ToTumloList = getFlyOverDataByPassPoint("P181", "TUMLO", "P181", 7800, 14);
+        
         
         
         // 下面是当前正在指挥的飞机
@@ -575,13 +576,65 @@ public class QuDiaoService {
         
         List<FlyData> allList = Lists.newArrayList(southQuDiaoList);
         allList.addAll(southFlyOverQuDiaoMap.values());
+        allList.addAll(udinoToTumloList);
+        allList.addAll(p181ToTumloList);
         if (!CollectionUtils.isEmpty(nowCommandFLyDataList)) {
         	allList.addAll(nowCommandFLyDataList);
         }
-        List<FlyData> filterList = Lists.newArrayList();
-        for (FlyData fd : allList) {
-        	if (fd.getPass1() != null && fd.getPass2() != null) {
-        		filterList.add(fd);
+        Set<String> doneSet = new HashSet<>();
+        List<FlyData> retList = new ArrayList<>();
+        for (FlyData port : allList) {
+        	if (!doneSet.contains(port.getARCID()) && port.getPass1() != null && port.getPass2() != null) {
+        		retList.add(port);
+        		doneSet.add(port.getARCID());
+        	}
+        }
+        return retList;
+	}
+
+	/**
+	 * @param point1	第一过点
+	 * @param point2	第二过点
+	 * @param standardPoint		计算生命周期使用的基准点，有可能是第一过点，有可能是第二过点
+	 * @param high
+	 * @param addMinutue
+	 * @return
+	 */
+	private List<FlyData> getFlyOverDataByPassPoint(String point1, String point2, String standardPoint, int high, int addMinutue) {
+		Date nowTime = getNOW();
+		List<FlyData> point1ToPoint2 = quDiaoDao.getByPassPointList(point1, point2);
+        List<FlyData> filterList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(point1ToPoint2)) {
+        	List<String> arcIdList = Lists.newArrayList(Sets.newHashSet(Lists.transform(point1ToPoint2, new Function<FlyData, String>() {
+				@Override
+				public String apply(FlyData arg0) {
+					return arg0.getARCID();
+				}})));
+        	List<String> arcIds = quDiaoDao.getMatchTrackhisByARCIDList(arcIdList, 7800);
+        	for (FlyData fd : point1ToPoint2) {
+        		if (arcIds.contains(fd.getARCID())) {
+        			if (fd.getPTID().equals(standardPoint)) {
+        				Date tmp = fd.getETO();
+        				Date pass1 = null, pass2 = null;
+        				if (addMinutue > 0) {
+        					pass1 = tmp;
+        					pass2 = DateUtils.addMinutes(tmp, addMinutue);
+        				} else {
+        					pass1 = DateUtils.addMinutes(tmp, addMinutue);
+        					pass2 = tmp;
+        				}
+        				fd.setPass1(pass1);
+        				fd.setPass2(pass2);
+        				long intervalMis = pass2.getTime() - pass1.getTime();
+        				int intervalMinutue = (int) (intervalMis / 60000);
+        				fd.setInterval(intervalMinutue);
+        				fd.setMinutes((int)(pass1.getTime() - nowTime.getTime()) / 6000);
+        				filterList.add(fd);
+        				if (logger.isDebugEnabled()) {
+        	        		logger.debug("\n---------South getFlyOverDataByPassPoint----------{} ", fd);
+        	        	}
+        			}
+        		}
         	}
         }
         return filterList;
