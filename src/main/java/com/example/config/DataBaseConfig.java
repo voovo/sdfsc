@@ -25,11 +25,12 @@ public class DataBaseConfig {
         BasicDataSource dataSource = new BasicDataSource();
         // 数据库连接配置
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        
-        dataSource.setUrl("jdbc:mysql://58.56.56.180:8998/sdfsc");
+//        dataSource.setUrl("jdbc:mysql://58.56.56.180:8998/sdfsc");
+//        dataSource.setUsername("root");
+//        dataSource.setPassword("rootjzkc");
+        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/sdfsc_20180301");
         dataSource.setUsername("root");
-        dataSource.setPassword("rootjzkc");
-//        dataSource.setPassword("root");
+        dataSource.setPassword("root");
         return dataSource;
     }
 

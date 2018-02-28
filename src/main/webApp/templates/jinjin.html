@@ -5,7 +5,7 @@
 function myrefresh(){ 
 	var date = new Date();
 	if (date.getMinutes() % 5 == 0) {
-		window.location.reload(); 
+		//window.location.reload(); 
 	} else {
 		setTimeout('myrefresh()',30000); //指定5min刷新一次
 	}

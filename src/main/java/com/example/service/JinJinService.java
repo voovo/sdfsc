@@ -109,7 +109,7 @@ public class JinJinService {
         List<FlyData> jinjinList = new ArrayList<>();
         Map<String, FlyData> leaveJinJinMap = new HashMap<>();
         for (FlyData fd : toFlyLeavePortList) {
-        	if (fd.getSECTOR().startsWith("AP")) {
+        	if (null != fd.getSECTOR() && fd.getSECTOR().startsWith("AP")) {
         		continue;
         	}
         	
@@ -133,14 +133,18 @@ public class JinJinService {
         		leaveJinJinMap.put(fd.getIFPLID(), fd);
         	}
         	if (null != leaveJinJinMap.get(fd.getIFPLID()).getPass1() && null != leaveJinJinMap.get(fd.getIFPLID()).getPass2()) {
+        		if (leaveJinJinMap.get(fd.getIFPLID()).getPass1().before(nowTime)) {
+            		// 未出港的飞机，第一个过点时间肯定不能早于现在，如果早于了，认为有问题，忽略
+            		continue;
+            	}
         		long intervalMis = leaveJinJinMap.get(fd.getIFPLID()).getPass2().getTime() - leaveJinJinMap.get(fd.getIFPLID()).getPass1().getTime();
         		int intervalMinutue = (int) (intervalMis / 60000);
         		leaveJinJinMap.get(fd.getIFPLID()).setInterval(intervalMinutue);
-        		Date pointTime = leaveJinJinMap.get(fd.getIFPLID()).getATD();
-                if (pointTime == null) {
-                    pointTime = leaveJinJinMap.get(fd.getIFPLID()).getEOBT();
-                }
-        		leaveJinJinMap.get(fd.getIFPLID()).setMinutes((int)(pointTime.getTime() - nowTime.getTime()) / 60000);
+//        		Date pointTime = leaveJinJinMap.get(fd.getIFPLID()).getATD();
+//                if (pointTime == null) {
+//                    pointTime = leaveJinJinMap.get(fd.getIFPLID()).getEOBT();
+//                }
+        		leaveJinJinMap.get(fd.getIFPLID()).setMinutes((int)(leaveJinJinMap.get(fd.getIFPLID()).getPass1().getTime() - nowTime.getTime()) / 60000);
         		if (logger.isDebugEnabled()) {
         			logger.debug("\n---------Leave---1-----{}", leaveJinJinMap.get(fd.getIFPLID()));
         		}
@@ -250,7 +254,7 @@ public class JinJinService {
         List<FlyData> toArriveEnterPortList = jinjinDao.getToArriveFlyDataForJinJin(JinJinPassPointList);
         List<FlyData> jinjinList = new ArrayList<>();
         for (FlyData fd : toArriveEnterPortList) {
-        	if (fd.getSECTOR().startsWith("AP")) {
+        	if (null != fd.getSECTOR() && fd.getSECTOR().startsWith("AP")) {
         		continue;
         	}
         	Date pass1 = null, pass2 = null;
@@ -270,12 +274,15 @@ public class JinJinService {
         	if (null == pass1) {
         		continue;
         	}
+        	if (pass2.after(nowTime)) {
+        		pass2 = DateUtils.addMinutes(nowTime, -5);
+        	}
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
-        	fd.setMinutes((int)(fd.getETA().getTime() - nowTime.getTime()) / 60000);
+        	fd.setMinutes((int)(fd.getPass1().getTime() - nowTime.getTime()) / 60000);
         	if (logger.isDebugEnabled()) {
         		logger.debug("\n---------Enter--1------------{} ", fd);
         	}
