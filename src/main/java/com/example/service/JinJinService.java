@@ -274,8 +274,8 @@ public class JinJinService {
         	if (null == pass1) {
         		continue;
         	}
-        	if (pass2.after(nowTime)) {
-        		pass2 = DateUtils.addMinutes(nowTime, -5);
+        	if (pass1.before(nowTime)) {
+        		continue;
         	}
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
