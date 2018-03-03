@@ -222,6 +222,19 @@ public class JinJinService {
         	Date pass1 = null, pass2 = null;
         	if (fd.getPTID().equals("GULEK")) {
         		pass1 = fd.getETO();
+        		// TODO zhangpc  20180303 问题：GULEK进港的航班， 考虑过点时间在当前时间之前情况时，过点时间1即为数据库过点时间，过点时间2即在过点时间1的基础上加22分钟
+        		if (pass1 != null && pass1.before(nowTime)) {
+        			pass2 = fd.getATA();
+        			fd.setPass1(pass1);
+        			fd.setPass2(DateUtils.addMinutes(pass1, 22));
+        			long intervalMis = pass2.getTime() - pass1.getTime();
+                	int intervalMinutue = (int) (intervalMis / 60000) ;
+                	fd.setInterval(intervalMinutue);
+                	fd.setMinutes(0);
+                	arrivedJinJinList.add(fd);
+                	continue;
+        		}
+        		// TODO end
         	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
         		pass1 = fd.getETO();
         	} else if (fd.getPTID().equals("BASOV")) {
@@ -260,7 +273,19 @@ public class JinJinService {
         	Date pass1 = null, pass2 = null;
         	if (fd.getPTID().equals("GULEK")) {
         		pass1 = fd.getETO();
-        		pass2 = DateUtils.addMinutes(fd.getETO(), 22); 
+        		pass2 = DateUtils.addMinutes(pass1, 22);
+        		// TODO zhangpc  20180303 问题：GULEK进港的航班， 考虑过点时间在当前时间之前情况时，过点时间1即为数据库过点时间，过点时间2即在过点时间1的基础上加22分钟
+        		if (pass1 != null && pass1.before(nowTime)) {
+        			fd.setPass1(pass1);
+        			fd.setPass2(pass2);
+        			long intervalMis = pass2.getTime() - pass1.getTime();
+                	int intervalMinutue = (int) (intervalMis / 60000) ;
+                	fd.setInterval(intervalMinutue);
+                	fd.setMinutes(0);
+                	jinjinList.add(fd);
+                	continue;
+        		}
+        		// TODO end
         	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
         		pass1 = fd.getETO();
         		pass2 = DateUtils.addMinutes(fd.getETO(), 13); 
