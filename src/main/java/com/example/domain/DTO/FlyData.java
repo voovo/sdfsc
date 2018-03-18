@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 页面返回数据
+ */
 public class FlyData {
 	static SimpleDateFormat simpleDateFormat_NoSec = new SimpleDateFormat("yyyyMMddHHmm");
 	static SimpleDateFormat simpleDateFormat_HaveSec  = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -115,18 +118,23 @@ public class FlyData {
     public void setSTATUS(String STATUS) {
         this.STATUS = STATUS;
     }
+    
+    public void setDirection(String _direction) {
+    	this.direction = _direction;
+    }
+    
     public String getDirection() {
-       String  direction = "direction";
-        if (RTE.indexOf("GULEK") != -1) {
-            direction = "W";
-        } else if (RTE.indexOf("PANKI") != -1) {
-            direction = "N";
-        } else if (RTE.indexOf("P291") != -1 || RTE.indexOf("BASOV") != -1) {
-            direction = "E";
-        } else if (RTE.indexOf("ASTUB") != -1 || RTE.indexOf("P200") != -1 || RTE.indexOf("P292") != 0) {
-            direction = "S";
-        }
-        return direction;
+//       String  direction = "direction";
+//        if (RTE.indexOf("GULEK") != -1) {
+//            direction = "W";
+//        } else if (RTE.indexOf("PANKI") != -1) {
+//            direction = "N";
+//        } else if (RTE.indexOf("P291") != -1 || RTE.indexOf("BASOV") != -1) {
+//            direction = "E";
+//        } else if (RTE.indexOf("ABTUB") != -1 || RTE.indexOf("P200") != -1 || RTE.indexOf("P292") != 0) {
+//            direction = "S";
+//        }
+        return this.direction;
     }
 
     public String getRTE() {
@@ -226,6 +234,7 @@ public class FlyData {
 				.append(", Pass1:").append(simpleDateFormat.format(this.pass1))
 				.append(", Pass2:").append(simpleDateFormat.format(this.pass2))
 				.append(", IntervalMis:").append(this.interval)
-				.append(", Minutes:").append(this.minutes).toString();
+				.append(", Minutes:").append(this.minutes)
+				.append(", Direction:").append(this.direction).toString();
 	}
 }

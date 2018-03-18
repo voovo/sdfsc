@@ -3,14 +3,16 @@
 <head th:include="common/header::common_header"></head>
 <script language="JavaScript"> 
 function myrefresh(){ 
-	var date = new Date();
-	if (date.getMinutes() % 5 == 0) {
-		window.location.reload(); 
-	} else {
-		setTimeout('myrefresh()',30000); //指定5min刷新一次
-	}
+//	var date = new Date();
+//	if (date.getMinutes() % 5 == 0) {
+//		window.location.reload();
+//	} else {
+//		setTimeout('myrefresh()',3000); //指定5min刷新一次
+//	}
+    window.location.reload();
+    setTimeout('myrefresh()',15000); //指定5min刷新一次
 } 
-setTimeout('myrefresh()',30000); 
+setTimeout('myrefresh()',15000); //指定5min刷新一次
 </script> 
 <body>
 <div class="container-fluid">
@@ -686,7 +688,7 @@ setTimeout('myrefresh()',30000);
                     type: 'value',
                     splitNumber: 2,
                     min:0,
-                    max:20,
+                    //max:15,
                     interval:1,
                     axisLabel: {
                         show: true,
@@ -705,7 +707,7 @@ setTimeout('myrefresh()',30000);
                     data: leaveCounts,
                     markLine: {
                         data: [
-                            [{name: '当前时间5', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60/ timeStep), yAxis: 15}]
+                            [{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60/ timeStep), yAxis: 15}]
                         ]
                     }
                 }
@@ -784,7 +786,7 @@ setTimeout('myrefresh()',30000);
 					type: 'value',
 					splitNumber: 2,
 					min:0,
-					max:20,
+					max:15,
 					interval:1,
 					axisLabel: {
 						show: true,
@@ -803,7 +805,7 @@ setTimeout('myrefresh()',30000);
 					data: leaveCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间6', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60/ timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60/ timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -929,7 +931,7 @@ setTimeout('myrefresh()',30000);
                     type: 'value',
                     splitNumber: 2,
                     min:0,
-                    max:20,
+                    //max:15,
                     interval:1,
                     axisLabel: {
                         show: true,
@@ -948,7 +950,7 @@ setTimeout('myrefresh()',30000);
                     data: enterCounts,
                     markLine: {
                         data: [
-                            [{name: '当前时间7', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
+                            [{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
                         ]
                     }
                 }
@@ -1029,7 +1031,7 @@ setTimeout('myrefresh()',30000);
 					type: 'value',
 					splitNumber: 2,
 					min:0,
-					max:20,
+					max:15,
 					interval:1,
 					axisLabel: {
 						show: true,
@@ -1048,7 +1050,7 @@ setTimeout('myrefresh()',30000);
 					data: enterCounts,
 					markLine: {
 						data: [
-							[{name: '当前时间2', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
 						]
 					}
 				}
@@ -1172,7 +1174,7 @@ setTimeout('myrefresh()',30000);
                 trigger: 'axis'
             },
             legend: {
-                data:['出港进港总数','进港','出港'],
+                data:['出港进港总数','出港','进港'],
                 left: 'left'
             },
 
@@ -1208,7 +1210,7 @@ setTimeout('myrefresh()',30000);
                     type: 'value',
                     splitNumber: 2,
                     min:0,
-                    max:20,
+//                    max:15,
                     interval:1,
                     axisLabel: {
                         show: true,
@@ -1220,29 +1222,26 @@ setTimeout('myrefresh()',30000);
                 }
             ],
             series: [
-                
+                {
+                    name: '出港',
+                    type: 'bar',
+                    data: leaveCounts
+                },
                 {
                     name: '进港',
                     type: 'bar',
-					stack: '进出港',
-                    data: enterCounts,
-					markLine: {
+                    data: enterCounts
+                },
+                {
+                    name: '出港进港总数',
+                    type: 'bar',
+                    data: countAll,
+                    markLine: {
                         data: [
-                            [{name: '当前时间3', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
+                            [{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
                         ]
                     }
-                },
-				{
-                    name: '出港',
-                    type: 'bar',
-					stack: '进出港',
-                    data: leaveCounts
-                },
-                //{
-                //    name: '出港进港总数',
-                //    type: 'bar',
-                //    data: countAll,
-                //}
+                }
             ],
             formatter: function (params, ticket, callback) {
                 var result = "";
@@ -1342,7 +1341,7 @@ setTimeout('myrefresh()',30000);
 					type: 'value',
 					splitNumber: 2,
 					min:0,
-					max:20,
+					max:15,
 					interval:1,
 					axisLabel: {
 						show: true,
@@ -1370,7 +1369,7 @@ setTimeout('myrefresh()',30000);
 					data: countAll,
 					markLine: {
 						data: [
-							[{name: '当前时间4', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
+							[{name: '当前时间', xAxis: parseInt(60 / timeStep), yAxis: 0}, {xAxis: parseInt(60 / timeStep), yAxis: 15}]
 						]
 					}
 				}

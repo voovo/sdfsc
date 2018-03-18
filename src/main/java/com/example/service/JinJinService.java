@@ -18,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 进近相关业务逻辑
+ */
 @Service
 public class JinJinService {
 	/*
@@ -54,6 +59,9 @@ public class JinJinService {
     @Autowired
     private JinJinDao jinjinDao;
     
+    /**
+     * 取当前时间
+     */
     public static Date getNOW(){
     	Date now = new Date();
 		Calendar c = Calendar.getInstance();
@@ -63,7 +71,9 @@ public class JinJinService {
         return c.getTime();
     }
     
-    //进近出港航班
+    /**
+     * 进近出港航班
+     */
     public List<FlyData> getLeavePortTable(Date nowTime) throws ParseException {
         
         List<FlyData> haveLeavedFlyDataList = jinjinDao.getHaveLeavedFlyDataForJinJin(JinJinPassPointList);
@@ -80,18 +90,27 @@ public class JinJinService {
         	} else if (fd.getPTID().equals("P291") || fd.getPTID().equals("PANKI") ) {
         		pass2 = fd.getETO();
         	}
+        	String direction = getDirection(fd);
         	pass1 = fd.getATD();
         	if (null == pass2) {
         		continue;
         	}
+        	
         	if (pass2.after(nowTime)) {
-        		pass2 = DateUtils.addMinutes(nowTime, -5);
+        		pass1 = DateUtils.addMinutes(nowTime, -5);
         	}
         	if (pass1.after(pass2)) {
         		continue;
         	}
+        	// 3.16号，所有出港航班有实际起飞时间的，生命周期在实际起飞的基础上+7
+        	if (pass1 != null) {
+        		pass2 = DateUtils.addMinutes(pass1, 7);
+        	}
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
+        	if (!direction.equals("Direction")) {
+    			fd.setDirection(direction);
+			}
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
@@ -120,16 +139,30 @@ public class JinJinService {
         	if (JinJinPassPointList.contains(fd.getPTID())) {
         		pass2 = fd.getETO(); 
         	}
+        	// 3.16号，所有出港航班有实际起飞时间的，生命周期在实际起飞的基础上+7
+        	if (pass1 != null) {
+        		pass2 = DateUtils.addMinutes(pass1, 7);
+        	}
+        	String direction = getDirection(fd);
         	if (leaveJinJinMap.containsKey(fd.getIFPLID())) {
         		if (null == leaveJinJinMap.get(fd.getIFPLID()).getPass1() && null != pass1) {
         			leaveJinJinMap.get(fd.getIFPLID()).setPass1(pass1);
+        			if (!direction.equals("Direction")) {
+        				leaveJinJinMap.get(fd.getIFPLID()).setDirection(direction);
+        			}
         		}
         		if (null == leaveJinJinMap.get(fd.getIFPLID()).getPass2() && null != pass2) {
         			leaveJinJinMap.get(fd.getIFPLID()).setPass2(pass2);
+        			if (!direction.equals("Direction")) {
+        				leaveJinJinMap.get(fd.getIFPLID()).setDirection(direction);
+        			}
         		}
         	} else {
         		fd.setPass1(pass1);
         		fd.setPass2(pass2);
+        		if (!direction.equals("Direction")) {
+        			fd.setDirection(direction);
+    			}
         		leaveJinJinMap.put(fd.getIFPLID(), fd);
         	}
         	if (null != leaveJinJinMap.get(fd.getIFPLID()).getPass1() && null != leaveJinJinMap.get(fd.getIFPLID()).getPass2()) {
@@ -163,16 +196,30 @@ public class JinJinService {
             	if (nowPassPointList.contains(fd.getPTID())) {
             		pass2 = fd.getETO(); 
             	}
+            	// 3.16号，所有出港航班有实际起飞时间的，生命周期在实际起飞的基础上+7
+            	if (pass1 != null) {
+            		pass2 = DateUtils.addMinutes(pass1, 7);
+            	}
+            	String direction = getDirection(fd);
             	if (leaveJinJinMap.containsKey(fd.getIFPLID())) {
             		if (null == leaveJinJinMap.get(fd.getIFPLID()).getPass1() && null != pass1) {
             			leaveJinJinMap.get(fd.getIFPLID()).setPass1(pass1);
+            			if (!direction.equals("Direction")) {
+            				leaveJinJinMap.get(fd.getIFPLID()).setDirection(direction);
+            			}
             		}
             		if (null == leaveJinJinMap.get(fd.getIFPLID()).getPass2() && null != pass2) {
             			leaveJinJinMap.get(fd.getIFPLID()).setPass2(pass2);
+            			if (!direction.equals("Direction")) {
+            				leaveJinJinMap.get(fd.getIFPLID()).setDirection(direction);
+            			}
             		}
             	} else {
             		fd.setPass1(pass1);
             		fd.setPass2(pass2);
+            		if (!direction.equals("Direction")) {
+        				fd.setDirection(direction);
+        			}
             		leaveJinJinMap.put(fd.getIFPLID(), fd);
             	}
             	if (null != leaveJinJinMap.get(fd.getIFPLID()).getPass1() && null != leaveJinJinMap.get(fd.getIFPLID()).getPass2()) {
@@ -208,10 +255,40 @@ public class JinJinService {
         		doneSet.add(port.getARCID());
         	}
         }
+        Collections.sort(retList, new Comparator<FlyData>(){
+
+			@Override
+			public int compare(FlyData o1, FlyData o2) {
+				if (null != o1.getEOBT() && null != o2.getEOBT()) {
+					return o1.getEOBT().compareTo(o2.getEOBT());
+				} else{
+					return 1;
+				}
+				
+				
+			}
+        	
+        });
         return retList;
     }
 
-    //进近进港表航班
+	private String getDirection(FlyData fd) {
+		String direction = "Direction";
+		if (fd.getPTID().equals("GULEK")) {
+			direction = "W";
+		} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
+			direction = "S";
+		} else if (fd.getPTID().equals("BASOV") || fd.getPTID().equals("P291")) {
+			direction = "E";
+		} else if ( fd.getPTID().equals("PANKI") ) {
+			direction = "N";
+		}
+		return direction;
+	}
+
+    /**
+     * 进近进港表航班
+     */
     public List<FlyData> getEnterPortTable(Date nowTime) throws ParseException {
         if (null == nowTime) {
             nowTime = getNOW();
@@ -222,19 +299,6 @@ public class JinJinService {
         	Date pass1 = null, pass2 = null;
         	if (fd.getPTID().equals("GULEK")) {
         		pass1 = fd.getETO();
-        		// TODO zhangpc  20180303 问题：GULEK进港的航班， 考虑过点时间在当前时间之前情况时，过点时间1即为数据库过点时间，过点时间2即在过点时间1的基础上加22分钟
-        		if (pass1 != null && pass1.before(nowTime)) {
-        			pass2 = fd.getATA();
-        			fd.setPass1(pass1);
-        			fd.setPass2(DateUtils.addMinutes(pass1, 22));
-        			long intervalMis = pass2.getTime() - pass1.getTime();
-                	int intervalMinutue = (int) (intervalMis / 60000) ;
-                	fd.setInterval(intervalMinutue);
-                	fd.setMinutes(0);
-                	arrivedJinJinList.add(fd);
-                	continue;
-        		}
-        		// TODO end
         	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
         		pass1 = fd.getETO();
         	} else if (fd.getPTID().equals("BASOV")) {
@@ -248,12 +312,17 @@ public class JinJinService {
         	}
         	if (pass2.after(nowTime)) {
         		pass2 = DateUtils.addMinutes(nowTime, -5);
+//        	} else if (pass2.before(nowTime) && DateUtils.truncatedCompareTo(nowTime, pass2, Calendar.MINUTE) < 3) {
+        	} else if (pass2.before(nowTime) && (nowTime.getTime() - pass2.getTime())/(1000*60) < 3) {
+        		pass2 = DateUtils.addMinutes(nowTime, -5);
         	}
         	if (pass1.after(pass2)) {
         		continue;
         	}
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
+        	String direction = getDirection(fd);
+        	fd.setDirection(direction);
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
@@ -267,25 +336,14 @@ public class JinJinService {
         List<FlyData> toArriveEnterPortList = jinjinDao.getToArriveFlyDataForJinJin(JinJinPassPointList);
         List<FlyData> jinjinList = new ArrayList<>();
         for (FlyData fd : toArriveEnterPortList) {
-        	if (null != fd.getSECTOR() && fd.getSECTOR().startsWith("AP")) {
-        		continue;
-        	}
         	Date pass1 = null, pass2 = null;
         	if (fd.getPTID().equals("GULEK")) {
         		pass1 = fd.getETO();
         		pass2 = DateUtils.addMinutes(pass1, 22);
         		// TODO zhangpc  20180303 问题：GULEK进港的航班， 考虑过点时间在当前时间之前情况时，过点时间1即为数据库过点时间，过点时间2即在过点时间1的基础上加22分钟
         		if (pass1 != null && pass1.before(nowTime)) {
-        			fd.setPass1(pass1);
-        			fd.setPass2(pass2);
-        			long intervalMis = pass2.getTime() - pass1.getTime();
-                	int intervalMinutue = (int) (intervalMis / 60000) ;
-                	fd.setInterval(intervalMinutue);
-                	fd.setMinutes(0);
-                	jinjinList.add(fd);
-                	continue;
+        			pass1 = DateUtils.addMinutes(pass1, 5);
         		}
-        		// TODO end
         	} else if (fd.getPTID().equals("P292") || fd.getPTID().equals("ABTUB") || fd.getPTID().equals("P200")) {
         		pass1 = fd.getETO();
         		pass2 = DateUtils.addMinutes(fd.getETO(), 13); 
@@ -299,11 +357,18 @@ public class JinJinService {
         	if (null == pass1) {
         		continue;
         	}
-        	if (pass1.before(nowTime)) {
+        	// 未来进港航班，如果实际起飞时间为null（说明未起飞），并且它的预计降落时间在当前时间往后推1小时之内的，则过滤掉
+        	
+        	Date afterTime = DateUtils.addHours(nowTime, 1);
+        	Date afterDate = DateUtils.addMinutes(afterTime, 30);
+        	if (fd.getATD() == null && fd.getETA().after(nowTime) && fd.getETA().before(afterDate)) {
         		continue;
         	}
+        	
         	fd.setPass1(pass1);
         	fd.setPass2(pass2);
+        	String direction = getDirection(fd);
+        	fd.setDirection(direction);
 			long intervalMis = pass2.getTime() - pass1.getTime();
         	int intervalMinutue = (int) (intervalMis / 60000) ;
         	fd.setInterval(intervalMinutue);
@@ -336,8 +401,13 @@ public class JinJinService {
             	if (null == pass2) {
             		continue;
             	}
+            	if (pass1.after(nowTime)) {
+            		pass1 = nowTime;
+            	}
             	fd.setPass1(pass1);
             	fd.setPass2(pass2);
+            	String direction = getDirection(fd);
+            	fd.setDirection(direction);
     			long intervalMis = pass2.getTime() - pass1.getTime();
             	int intervalMinutue = (int) (intervalMis / 60000) ;
             	fd.setInterval(intervalMinutue);
@@ -364,10 +434,26 @@ public class JinJinService {
         List<FlyData> retList = new ArrayList<>();
         for (FlyData port : allList) {
         	if (!doneSet.contains(port.getARCID())) {
+        		// TODO zhangpc 考虑过点时间在当前时间之的情况，看是否符合当前管制的条件
+        		if (port.getPass1().after(nowTime) && (port.getSECTOR().startsWith("AP"))) {
+        			port.setMinutes(0);
+        		} else if (port.getMinutes() < 0 && port.getPass2().after(nowTime) && !port.getSECTOR().startsWith("AP")) {
+        			port.setInterval(5);
+        			port.setMinutes(5);
+        		}
         		retList.add(port);
         		doneSet.add(port.getARCID());
         	}
         }
+        Collections.sort(retList, new Comparator<FlyData>(){
+
+			@Override
+			public int compare(FlyData o1, FlyData o2) {
+				return o1.getPass2().compareTo(o2.getPass2());
+				
+			}
+        	
+        });
         return retList;
     }
     
